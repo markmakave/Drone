@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -fsanitize=undefined -rdynamic CMakeFiles/drone.dir/src/main.cpp.o -o drone 
