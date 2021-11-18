@@ -1,7 +1,16 @@
 project(drone LANGUAGES C CXX CUDA ASM)
 
-set(CMAKE_CXX_FLAGS "-O3 -fsanitize=undefined")
+find_package(OpenCV REQUIRED)
+
+include_directories(include)
+
+set(CMAKE_CXX_FLAGS "-O3")
 
 add_executable(drone
-	src/main.cpp
+	src/main.cu
+
+	src/depth/depth.cu
+	src/device/camera/camera.cpp
 )
+
+target_link_libraries(drone ${OpenCV_LIBS})

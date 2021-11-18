@@ -69,31 +69,130 @@ include CMakeFiles/drone.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/drone.dir/flags.make
 
-CMakeFiles/drone.dir/src/main.cpp.o: CMakeFiles/drone.dir/flags.make
-CMakeFiles/drone.dir/src/main.cpp.o: ../src/main.cpp
-CMakeFiles/drone.dir/src/main.cpp.o: CMakeFiles/drone.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lumina/dev/drone/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/drone.dir/src/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/drone.dir/src/main.cpp.o -MF CMakeFiles/drone.dir/src/main.cpp.o.d -o CMakeFiles/drone.dir/src/main.cpp.o -c /home/lumina/dev/drone/src/main.cpp
+CMakeFiles/drone.dir/src/main.o: CMakeFiles/drone.dir/flags.make
+CMakeFiles/drone.dir/src/main.o: ../src/main.cu
+CMakeFiles/drone.dir/src/main.o: CMakeFiles/drone.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lumina/dev/drone/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CUDA object CMakeFiles/drone.dir/src/main.o"
+	/usr/local/cuda-10.2/bin/nvcc -forward-unknown-to-host-compiler $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT CMakeFiles/drone.dir/src/main.o -MF CMakeFiles/drone.dir/src/main.o.d -x cu -c /home/lumina/dev/drone/src/main.cu -o CMakeFiles/drone.dir/src/main.o
 
-CMakeFiles/drone.dir/src/main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/drone.dir/src/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lumina/dev/drone/src/main.cpp > CMakeFiles/drone.dir/src/main.cpp.i
+CMakeFiles/drone.dir/src/main.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CUDA source to CMakeFiles/drone.dir/src/main.i"
+	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_PREPROCESSED_SOURCE
 
-CMakeFiles/drone.dir/src/main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/drone.dir/src/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lumina/dev/drone/src/main.cpp -o CMakeFiles/drone.dir/src/main.cpp.s
+CMakeFiles/drone.dir/src/main.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CUDA source to assembly CMakeFiles/drone.dir/src/main.s"
+	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_ASSEMBLY_SOURCE
+
+CMakeFiles/drone.dir/src/depth/depth.o: CMakeFiles/drone.dir/flags.make
+CMakeFiles/drone.dir/src/depth/depth.o: ../src/depth/depth.cu
+CMakeFiles/drone.dir/src/depth/depth.o: CMakeFiles/drone.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lumina/dev/drone/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CUDA object CMakeFiles/drone.dir/src/depth/depth.o"
+	/usr/local/cuda-10.2/bin/nvcc -forward-unknown-to-host-compiler $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT CMakeFiles/drone.dir/src/depth/depth.o -MF CMakeFiles/drone.dir/src/depth/depth.o.d -x cu -c /home/lumina/dev/drone/src/depth/depth.cu -o CMakeFiles/drone.dir/src/depth/depth.o
+
+CMakeFiles/drone.dir/src/depth/depth.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CUDA source to CMakeFiles/drone.dir/src/depth/depth.i"
+	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_PREPROCESSED_SOURCE
+
+CMakeFiles/drone.dir/src/depth/depth.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CUDA source to assembly CMakeFiles/drone.dir/src/depth/depth.s"
+	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_ASSEMBLY_SOURCE
+
+CMakeFiles/drone.dir/src/device/camera/camera.o: CMakeFiles/drone.dir/flags.make
+CMakeFiles/drone.dir/src/device/camera/camera.o: ../src/device/camera/camera.cpp
+CMakeFiles/drone.dir/src/device/camera/camera.o: CMakeFiles/drone.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lumina/dev/drone/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/drone.dir/src/device/camera/camera.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/drone.dir/src/device/camera/camera.o -MF CMakeFiles/drone.dir/src/device/camera/camera.o.d -o CMakeFiles/drone.dir/src/device/camera/camera.o -c /home/lumina/dev/drone/src/device/camera/camera.cpp
+
+CMakeFiles/drone.dir/src/device/camera/camera.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/drone.dir/src/device/camera/camera.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lumina/dev/drone/src/device/camera/camera.cpp > CMakeFiles/drone.dir/src/device/camera/camera.i
+
+CMakeFiles/drone.dir/src/device/camera/camera.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/drone.dir/src/device/camera/camera.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lumina/dev/drone/src/device/camera/camera.cpp -o CMakeFiles/drone.dir/src/device/camera/camera.s
 
 # Object files for target drone
 drone_OBJECTS = \
-"CMakeFiles/drone.dir/src/main.cpp.o"
+"CMakeFiles/drone.dir/src/main.o" \
+"CMakeFiles/drone.dir/src/depth/depth.o" \
+"CMakeFiles/drone.dir/src/device/camera/camera.o"
 
 # External object files for target drone
 drone_EXTERNAL_OBJECTS =
 
-drone: CMakeFiles/drone.dir/src/main.cpp.o
+drone: CMakeFiles/drone.dir/src/main.o
+drone: CMakeFiles/drone.dir/src/depth/depth.o
+drone: CMakeFiles/drone.dir/src/device/camera/camera.o
 drone: CMakeFiles/drone.dir/build.make
+drone: /usr/lib/aarch64-linux-gnu/libopencv_gapi.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_stitching.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_alphamat.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_aruco.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_barcode.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_bgsegm.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_bioinspired.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_ccalib.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_cudabgsegm.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_cudafeatures2d.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_cudaobjdetect.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_cudastereo.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_dnn_objdetect.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_dnn_superres.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_dpm.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_face.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_freetype.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_fuzzy.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_hdf.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_hfs.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_img_hash.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_intensity_transform.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_line_descriptor.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_mcc.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_quality.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_rapid.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_reg.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_rgbd.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_saliency.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_stereo.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_structured_light.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_superres.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_surface_matching.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_tracking.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_videostab.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_wechat_qrcode.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_xfeatures2d.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_xobjdetect.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_xphoto.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_shape.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_highgui.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_datasets.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_plot.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_text.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_ml.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_phase_unwrapping.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_cudacodec.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_videoio.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_cudaoptflow.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_cudalegacy.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_cudawarping.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_optflow.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_ximgproc.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_video.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_dnn.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_imgcodecs.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_objdetect.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_calib3d.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_features2d.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_flann.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_photo.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_cudaimgproc.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_cudafilters.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_imgproc.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_cudaarithm.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_core.so.4.5.3
+drone: /usr/lib/aarch64-linux-gnu/libopencv_cudev.so.4.5.3
 drone: CMakeFiles/drone.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lumina/dev/drone/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable drone"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lumina/dev/drone/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable drone"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/drone.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

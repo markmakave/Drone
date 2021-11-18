@@ -8,7 +8,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/lumina/dev/drone/src/main.cpp" "CMakeFiles/drone.dir/src/main.cpp.o" "gcc" "CMakeFiles/drone.dir/src/main.cpp.o.d"
+  "/home/lumina/dev/drone/src/depth/depth.cu" "CMakeFiles/drone.dir/src/depth/depth.o" "gcc" "CMakeFiles/drone.dir/src/depth/depth.o.d"
+  "/home/lumina/dev/drone/src/main.cu" "CMakeFiles/drone.dir/src/main.o" "gcc" "CMakeFiles/drone.dir/src/main.o.d"
+  "/home/lumina/dev/drone/src/device/camera/camera.cpp" "CMakeFiles/drone.dir/src/device/camera/camera.o" "gcc" "CMakeFiles/drone.dir/src/device/camera/camera.o.d"
   )
 
 # Targets to which this target links.

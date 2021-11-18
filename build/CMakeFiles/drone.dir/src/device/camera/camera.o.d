@@ -1,5 +1,7 @@
-CMakeFiles/drone.dir/src/main.cpp.o: /home/lumina/dev/drone/src/main.cpp \
- /usr/include/stdc-predef.h /usr/include/c++/7/iostream \
+CMakeFiles/drone.dir/src/device/camera/camera.o: \
+ /home/lumina/dev/drone/src/device/camera/camera.cpp \
+ /usr/include/stdc-predef.h /home/lumina/dev/drone/include/camera.h \
+ /usr/include/c++/7/iostream \
  /usr/include/aarch64-linux-gnu/c++/7/bits/c++config.h \
  /usr/include/aarch64-linux-gnu/c++/7/bits/os_defines.h \
  /usr/include/features.h /usr/include/aarch64-linux-gnu/sys/cdefs.h \
@@ -134,12 +136,11 @@ CMakeFiles/drone.dir/src/main.cpp.o: /home/lumina/dev/drone/src/main.cpp \
  /usr/include/c++/7/bits/locale_facets.tcc \
  /usr/include/c++/7/bits/basic_ios.tcc \
  /usr/include/c++/7/bits/ostream.tcc /usr/include/c++/7/istream \
- /usr/include/c++/7/bits/istream.tcc \
- /usr/include/aarch64-linux-gnu/sys/mman.h \
- /usr/include/aarch64-linux-gnu/bits/mman.h \
- /usr/include/aarch64-linux-gnu/bits/mman-linux.h \
- /usr/include/aarch64-linux-gnu/bits/mman-shared.h /usr/include/unistd.h \
- /usr/include/aarch64-linux-gnu/bits/posix_opt.h \
+ /usr/include/c++/7/bits/istream.tcc /usr/include/c++/7/cstring \
+ /usr/include/string.h /usr/include/strings.h \
+ /usr/include/aarch64-linux-gnu/bits/strings_fortified.h \
+ /usr/include/aarch64-linux-gnu/bits/string_fortified.h \
+ /usr/include/unistd.h /usr/include/aarch64-linux-gnu/bits/posix_opt.h \
  /usr/include/aarch64-linux-gnu/bits/environments.h \
  /usr/include/aarch64-linux-gnu/bits/confname.h \
  /usr/include/aarch64-linux-gnu/bits/getopt_posix.h \
@@ -149,4 +150,25 @@ CMakeFiles/drone.dir/src/main.cpp.o: /home/lumina/dev/drone/src/main.cpp \
  /usr/include/aarch64-linux-gnu/bits/fcntl-linux.h \
  /usr/include/aarch64-linux-gnu/bits/types/struct_iovec.h \
  /usr/include/linux/falloc.h /usr/include/aarch64-linux-gnu/bits/stat.h \
- /usr/include/aarch64-linux-gnu/bits/fcntl2.h
+ /usr/include/aarch64-linux-gnu/bits/fcntl2.h \
+ /usr/include/aarch64-linux-gnu/sys/mman.h \
+ /usr/include/aarch64-linux-gnu/bits/mman.h \
+ /usr/include/aarch64-linux-gnu/bits/mman-linux.h \
+ /usr/include/aarch64-linux-gnu/bits/mman-shared.h \
+ /usr/include/aarch64-linux-gnu/sys/ioctl.h \
+ /usr/include/aarch64-linux-gnu/bits/ioctls.h \
+ /usr/include/aarch64-linux-gnu/asm/ioctls.h \
+ /usr/include/asm-generic/ioctls.h /usr/include/linux/ioctl.h \
+ /usr/include/aarch64-linux-gnu/asm/ioctl.h \
+ /usr/include/asm-generic/ioctl.h \
+ /usr/include/aarch64-linux-gnu/bits/ioctl-types.h \
+ /usr/include/aarch64-linux-gnu/sys/ttydefaults.h \
+ /usr/include/linux/videodev2.h /usr/include/aarch64-linux-gnu/sys/time.h \
+ /usr/include/linux/types.h /usr/include/aarch64-linux-gnu/asm/types.h \
+ /usr/include/asm-generic/types.h /usr/include/asm-generic/int-ll64.h \
+ /usr/include/aarch64-linux-gnu/asm/bitsperlong.h \
+ /usr/include/asm-generic/bitsperlong.h /usr/include/linux/posix_types.h \
+ /usr/include/linux/stddef.h \
+ /usr/include/aarch64-linux-gnu/asm/posix_types.h \
+ /usr/include/asm-generic/posix_types.h /usr/include/linux/v4l2-common.h \
+ /usr/include/linux/v4l2-controls.h

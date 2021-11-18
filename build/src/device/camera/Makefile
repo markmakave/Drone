@@ -87,14 +87,14 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lumina/dev/drone/build/CMakeFiles /home/lumina/dev/drone/build//CMakeFiles/progress.marks
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
+	cd /home/lumina/dev/drone/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/lumina/dev/drone/build/CMakeFiles /home/lumina/dev/drone/build/src/device/camera//CMakeFiles/progress.marks
+	cd /home/lumina/dev/drone/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/device/camera/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/lumina/dev/drone/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 clean
+	cd /home/lumina/dev/drone/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/device/camera/clean
 .PHONY : clean
 
 # The main clean target
@@ -103,76 +103,18 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 preinstall
+	cd /home/lumina/dev/drone/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/device/camera/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 preinstall
+	cd /home/lumina/dev/drone/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/device/camera/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/lumina/dev/drone/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
-
-#=============================================================================
-# Target rules for targets named drone
-
-# Build rule for target.
-drone: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 drone
-.PHONY : drone
-
-# fast build rule for target.
-drone/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/drone.dir/build.make CMakeFiles/drone.dir/build
-.PHONY : drone/fast
-
-# target to build an object file
-src/depth/depth.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/drone.dir/build.make CMakeFiles/drone.dir/src/depth/depth.o
-.PHONY : src/depth/depth.o
-
-# target to preprocess a source file
-src/depth/depth.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/drone.dir/build.make CMakeFiles/drone.dir/src/depth/depth.i
-.PHONY : src/depth/depth.i
-
-# target to generate assembly for a file
-src/depth/depth.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/drone.dir/build.make CMakeFiles/drone.dir/src/depth/depth.s
-.PHONY : src/depth/depth.s
-
-# target to build an object file
-src/device/camera/camera.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/drone.dir/build.make CMakeFiles/drone.dir/src/device/camera/camera.o
-.PHONY : src/device/camera/camera.o
-
-# target to preprocess a source file
-src/device/camera/camera.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/drone.dir/build.make CMakeFiles/drone.dir/src/device/camera/camera.i
-.PHONY : src/device/camera/camera.i
-
-# target to generate assembly for a file
-src/device/camera/camera.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/drone.dir/build.make CMakeFiles/drone.dir/src/device/camera/camera.s
-.PHONY : src/device/camera/camera.s
-
-# target to build an object file
-src/main.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/drone.dir/build.make CMakeFiles/drone.dir/src/main.o
-.PHONY : src/main.o
-
-# target to preprocess a source file
-src/main.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/drone.dir/build.make CMakeFiles/drone.dir/src/main.i
-.PHONY : src/main.i
-
-# target to generate assembly for a file
-src/main.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/drone.dir/build.make CMakeFiles/drone.dir/src/main.s
-.PHONY : src/main.s
 
 # Help Target
 help:
@@ -182,16 +124,6 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... drone"
-	@echo "... src/depth/depth.o"
-	@echo "... src/depth/depth.i"
-	@echo "... src/depth/depth.s"
-	@echo "... src/device/camera/camera.o"
-	@echo "... src/device/camera/camera.i"
-	@echo "... src/device/camera/camera.s"
-	@echo "... src/main.o"
-	@echo "... src/main.i"
-	@echo "... src/main.s"
 .PHONY : help
 
 
@@ -203,6 +135,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/lumina/dev/drone/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 
