@@ -1,6 +1,6 @@
 #include "depth.h"
 
-#define RADIUS 2
+#define RADIUS 1
 #define THRESOLD 400 * (RADIUS * 2 + 1) * (RADIUS * 2 + 1)
 #define MULTIPLIER 1
 
@@ -31,12 +31,35 @@ __global__ void depth(map<uint8_t>* left, map<uint8_t>* right, map<uint8_t>* res
             }
         }
 
-        if (cur < delta && cur < THRESOLD) {
+        if (cur < delta /*&& cur < THRESOLD*/) {
             hit = i;
             delta = cur;
         }
     }
 
-    //(*result)(x, y) = (x - hit) * MULTIPLIER;
     (*result)(x, y) = disparity2depth(x - hit);
+}
+
+__device__ int8_t core[3][3] = {{-1, -1, -1}, {-1, 9, -1}, {-1, -1, -1}};
+
+__global__ void filter(map<uint8_t>* in, map<uint8_t>* out) {
+    int16_t x = threadIdx.x + blockIdx.x * blockDim.x;
+    int16_t y = threadIdx.y + blockIdx.y * blockDim.y;
+    if (x < 1 || y < 1 || x >= out->width - 2 || y >= out->height - 2) return;
+
+    int16_t sum = 0;
+    for (int _x = -1; _x <= 1; ++_x) {
+        for (int _y = -1; _y <= 1; ++_y) {
+            sum += (int16_t)core[_y + 1][_x + 1] * (int16_t)(*in)(x + _x, y + _y);
+        }
+    }
+
+    if (sum > 255) {
+        sum = 255;
+    } else if (sum < 0) {
+        sum = 0;
+    }
+
+
+    (*out)(x, y) = sum;
 }

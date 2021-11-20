@@ -9,10 +9,11 @@
 #include <linux/videodev2.h>
 
 class Camera {
-public:
+private:
     int         fd;
     uint8_t**   mem;
 
+public:
             Camera();
             Camera(uint8_t);
 

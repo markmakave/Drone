@@ -19,10 +19,19 @@ int main(int argc, char** argv) {
 
     Camera cam_l(0), cam_r(1);
 
-    map<uint8_t> mh_l(WIDTH, HEIGHT), mh_r(WIDTH, HEIGHT), depth_map(WIDTH, HEIGHT);
+    map<uint8_t> 
+        mh_l(WIDTH, HEIGHT), 
+        mh_r(WIDTH, HEIGHT), 
+        fl_l(WIDTH, HEIGHT),
+        fl_r(WIDTH, HEIGHT),
+        depth_map(WIDTH, HEIGHT);
 
     mh_l.alloc();
     mh_r.alloc();
+
+    fl_l.alloc();
+    fl_r.alloc();
+
     depth_map.alloc();
 
     cam_l.start();
@@ -30,6 +39,11 @@ int main(int argc, char** argv) {
 
     cv::Mat img(HEIGHT, WIDTH, CV_8UC1, depth_map.host_data);
     cv::Mat post(HEIGHT * 4, WIDTH * 4, CV_8UC1);
+
+    cv::Mat test_left(HEIGHT, WIDTH, CV_8UC1);
+    cv::Mat test_left_big(HEIGHT * 4, WIDTH * 4, CV_8UC1);
+    cv::Mat test_right(HEIGHT, WIDTH, CV_8UC1);
+    cv::Mat test_right_big(HEIGHT * 4, WIDTH * 4, CV_8UC1);
 
     // LOOP
 
@@ -44,7 +58,13 @@ int main(int argc, char** argv) {
         int tx = 16, ty = 16;
         dim3 blocks(WIDTH / tx + 1, HEIGHT / ty + 1);
         dim3 threads(tx, ty);
-        depth <<<blocks, threads>>> (mh_l.dev_ptr, mh_r.dev_ptr, depth_map.dev_ptr);
+
+        filter <<<blocks, threads>>> (mh_l.dev_ptr, fl_l.dev_ptr);
+        filter <<<blocks, threads>>> (mh_r.dev_ptr, fl_r.dev_ptr);
+        cudaDeviceSynchronize();
+
+        depth <<<blocks, threads>>> (fl_l.dev_ptr, fl_r.dev_ptr, depth_map.dev_ptr);
+        cudaDeviceSynchronize();
 
         depth_map.transfer(D2H);
         cv::resize(img, post, cv::Size(WIDTH * 4, HEIGHT * 4));
