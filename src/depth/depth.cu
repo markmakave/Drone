@@ -63,3 +63,35 @@ __global__ void filter(map<uint8_t>* in, map<uint8_t>* out) {
 
     (*out)(x, y) = sum;
 }
+
+#define MEDIAN_RADIUS 2
+
+__device__ void sort(uint8_t* arr, int n) {
+    for (int i = 0; i < n; i++) {
+        int minPosition = i;
+        for (int j = i + 1; j < n; j++) {
+            if (arr[minPosition] > arr[j])
+                minPosition = j;
+        }
+        uint8_t tmp = arr[minPosition];
+        arr[minPosition] = arr[i];
+        arr[i] = tmp;
+    }
+}
+
+__global__ void median(map<uint8_t>* in, map<uint8_t>* out) {
+    int16_t x = threadIdx.x + blockIdx.x * blockDim.x;
+    int16_t y = threadIdx.y + blockIdx.y * blockDim.y;
+    if (x < MEDIAN_RADIUS || y < MEDIAN_RADIUS || x >= out->width - MEDIAN_RADIUS - 1 || y >= out->height - MEDIAN_RADIUS - 1) return;
+
+    uint8_t arr[9];
+    for (int _x = -MEDIAN_RADIUS; _x <= MEDIAN_RADIUS; ++_x) {
+        for (int _y = -MEDIAN_RADIUS; _y <= MEDIAN_RADIUS; ++_y) {
+            arr[(_y + MEDIAN_RADIUS) * (2 * MEDIAN_RADIUS + 1) + (_x + MEDIAN_RADIUS)] = (*in)(x + _x, y + _y);
+        }
+    }
+
+    sort(arr, (MEDIAN_RADIUS * 2 + 1) * (MEDIAN_RADIUS * 2 + 1));
+
+    (*out)(x, y) = arr[4];
+}

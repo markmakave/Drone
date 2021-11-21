@@ -24,7 +24,8 @@ int main(int argc, char** argv) {
         mh_r(WIDTH, HEIGHT), 
         fl_l(WIDTH, HEIGHT),
         fl_r(WIDTH, HEIGHT),
-        depth_map(WIDTH, HEIGHT);
+        depth_map(WIDTH, HEIGHT),
+        md(WIDTH, HEIGHT);
 
     mh_l.alloc();
     mh_r.alloc();
@@ -34,16 +35,14 @@ int main(int argc, char** argv) {
 
     depth_map.alloc();
 
+    md.alloc();
+
     cam_l.start();
+    sleep(1);
     cam_r.start();
 
-    cv::Mat img(HEIGHT, WIDTH, CV_8UC1, depth_map.host_data);
+    cv::Mat img(HEIGHT, WIDTH, CV_8UC1, md.host_data);
     cv::Mat post(HEIGHT * 4, WIDTH * 4, CV_8UC1);
-
-    cv::Mat test_left(HEIGHT, WIDTH, CV_8UC1);
-    cv::Mat test_left_big(HEIGHT * 4, WIDTH * 4, CV_8UC1);
-    cv::Mat test_right(HEIGHT, WIDTH, CV_8UC1);
-    cv::Mat test_right_big(HEIGHT * 4, WIDTH * 4, CV_8UC1);
 
     // LOOP
 
@@ -51,7 +50,6 @@ int main(int argc, char** argv) {
 
         cam_l.capture(mh_l.host_data);
         cam_r.capture(mh_r.host_data);
-
         mh_l.transfer(H2D);
         mh_r.transfer(H2D);
 
@@ -66,12 +64,13 @@ int main(int argc, char** argv) {
         depth <<<blocks, threads>>> (fl_l.dev_ptr, fl_r.dev_ptr, depth_map.dev_ptr);
         cudaDeviceSynchronize();
 
-        depth_map.transfer(D2H);
-        cv::resize(img, post, cv::Size(WIDTH * 4, HEIGHT * 4));
+        median <<<blocks, threads>>> (depth_map.dev_ptr, md.dev_ptr);
+        cudaDeviceSynchronize();
 
+        md.transfer(D2H);
+        cv::resize(img, post, cv::Size(WIDTH * 4, HEIGHT * 4));
         cv::imshow("frame", post);
         cv::waitKey(1);
-
     }
 
     cam_l.stop();
