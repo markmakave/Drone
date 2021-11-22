@@ -1,7 +1,7 @@
 #include "depth.h"
 
 #define RADIUS 1
-#define THRESOLD 400 * (RADIUS * 2 + 1) * (RADIUS * 2 + 1)
+#define THRESOLD 100 * (RADIUS * 2 + 1) * (RADIUS * 2 + 1)
 #define MULTIPLIER 1
 
 #define WIDTH 160
@@ -31,7 +31,7 @@ __global__ void depth(map<uint8_t>* left, map<uint8_t>* right, map<uint8_t>* res
             }
         }
 
-        if (cur < delta /*&& cur < THRESOLD*/) {
+        if (cur < delta && cur < THRESOLD) {
             hit = i;
             delta = cur;
         }
@@ -64,7 +64,7 @@ __global__ void filter(map<uint8_t>* in, map<uint8_t>* out) {
     (*out)(x, y) = sum;
 }
 
-#define MEDIAN_RADIUS 2
+#define MEDIAN_RADIUS 3
 
 __device__ void sort(uint8_t* arr, int n) {
     for (int i = 0; i < n; i++) {
@@ -84,7 +84,7 @@ __global__ void median(map<uint8_t>* in, map<uint8_t>* out) {
     int16_t y = threadIdx.y + blockIdx.y * blockDim.y;
     if (x < MEDIAN_RADIUS || y < MEDIAN_RADIUS || x >= out->width - MEDIAN_RADIUS - 1 || y >= out->height - MEDIAN_RADIUS - 1) return;
 
-    uint8_t arr[9];
+    uint8_t arr[(MEDIAN_RADIUS * 2 + 1) * (MEDIAN_RADIUS * 2 + 1)];
     for (int _x = -MEDIAN_RADIUS; _x <= MEDIAN_RADIUS; ++_x) {
         for (int _y = -MEDIAN_RADIUS; _y <= MEDIAN_RADIUS; ++_y) {
             arr[(_y + MEDIAN_RADIUS) * (2 * MEDIAN_RADIUS + 1) + (_x + MEDIAN_RADIUS)] = (*in)(x + _x, y + _y);
@@ -93,5 +93,5 @@ __global__ void median(map<uint8_t>* in, map<uint8_t>* out) {
 
     sort(arr, (MEDIAN_RADIUS * 2 + 1) * (MEDIAN_RADIUS * 2 + 1));
 
-    (*out)(x, y) = arr[4];
+    (*out)(x, y) = arr[(MEDIAN_RADIUS * 2 + 1) * (MEDIAN_RADIUS * 2 + 1) / 2];
 }

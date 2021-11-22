@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
     cam_r.start();
 
     cv::Mat img(HEIGHT, WIDTH, CV_8UC1, md.host_data);
-    cv::Mat post(HEIGHT * 4, WIDTH * 4, CV_8UC1);
+    cv::Mat post(HEIGHT * 8, WIDTH * 8, CV_8UC1);
 
     // LOOP
 
@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
         cudaDeviceSynchronize();
 
         md.transfer(D2H);
-        cv::resize(img, post, cv::Size(WIDTH * 4, HEIGHT * 4));
+        cv::resize(img, post, cv::Size(WIDTH * 8, HEIGHT * 8));
         cv::imshow("frame", post);
         cv::waitKey(1);
     }
