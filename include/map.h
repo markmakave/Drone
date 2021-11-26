@@ -1,220 +1,366 @@
 #pragma once
 #include <cuda_runtime.h>
+#include <iostream>
 #include <cstdint>
+#include <cstring>  // for std::memcpy()
 
+/*
+ *  Enumerates map memory types
+ *  @param HOST host memory only
+ *  @param DEVICE device memory only
+ *  @param UNIFIER uses cuda unified memory system
+*/
+enum TYPE {
+    NONE    = 0,
+    HOST    = (1u << 0),
+    DEVICE  = (1u << 1),
+    UNIFIED = (1u << 2),
+};
+#define DEFAULT UNIFIED
+
+/*
+ *  Enumerates transfer directions
+ *  @param D2H Device to Host direction
+ *  @param H2D Host to Device direction
+*/
 enum TRANSFER_TYPE { 
     D2H, H2D
 };
 
-enum PTR_TYPE {
-    SYS_PTR, USR_PTR
-};
-template <class T>
+/*
+ *  Class containing a CPU/GPU locatable matrix
+ *  @param width matrix width
+ *  @param height matrix height
+ *  @param *h_data pointer to host data
+ *  @param *d_data pointer to device data
+ *  @param *d_this pointer to device clone of the host object
+*/
+template <typename T> 
 class map {
+//private:
 public:
     uint16_t    width, height;
-    T* 	        host_data, *dev_data;
-    map<T>* 	dev_ptr;
-    PTR_TYPE 	ptr_type;
+    T           *h_data, *d_data;
+    map         *d_this;
+    uint8_t     type;
 
 public:
-    __host__ __device__ inline      map();
-    __host__ __device__ inline      map(uint16_t, uint16_t);
-    __host__ __device__ inline      map(uint16_t, uint16_t, void*);
-    __host__            inline      map(const map&);
-    __host__            inline      map(map&&) noexcept;
+    /*
+     *  Default constructor
+    */
+    __host__ inline map()
+        : width(0), height(0), h_data(nullptr), d_this(nullptr), d_data(nullptr), type(NONE) {
+    }
 
-    __host__ __device__ inline T&   operator() (const int32_t, const int32_t);
-    __host__ __device__ inline T&   operator[] (const int32_t);
-    __host__            inline map& operator= (const map&);
-    __host__            inline map& operator= (map&&) noexcept;
+    /*
+     *  Constructor based on the matrix size
+     *  @param width width of the matrix
+     *  @param height height of the matrix
+     *  @param type mep memory type
+    */
+    __host__ inline map(uint16_t width, uint16_t height, uint8_t type = DEFAULT)
+        : width(width), height(height), type(type) {
+        if (type) alloc(type);
+    }
 
-    __host__            inline void alloc();
-    __host__            inline void transfer(TRANSFER_TYPE);
+    /*
+     *  Constructor based on other map object (deep copy contructor)
+     *  @param m source matrix
+    */
+    __host__ inline map(const map &m)
+        : width(m.width), height(m.height), type(m.type) {
+        switch(type) {
+            case NONE:
+                h_data = nullptr;
+                d_data = nullptr;
+                d_this = nullptr;
+                break;
 
-    __host__            inline      ~map();
+            case HOST:
+                _alloc_host();
+                std::memcpy(h_data, m.h_data, size() * sizeof(T));
+                d_data = nullptr;
+                d_this = nullptr;
+                break;
+
+            case DEVICE:
+                _alloc_device();
+                cudaMemcpy(d_data, m.d_data, size() * sizeof(T), cudaMemcpyDeviceToDevice);
+                h_data = nullptr;
+                break;
+
+            case HOST | DEVICE:
+                _alloc_host();
+                std::memcpy(h_data, m.h_data, size() * sizeof(T));
+                _alloc_device();
+                cudaMemcpy(d_data, m.d_data, size() * sizeof(T), cudaMemcpyDeviceToDevice);
+                break;
+
+            case UNIFIED:
+                cudaMallocManaged((void**)&h_data, size() * sizeof(T));
+                d_data = h_data;
+                cudaMalloc((void**)&d_this, sizeof(*this));
+                cudaMemcpy(d_this, this, sizeof(*this), cudaMemcpyHostToDevice);
+                std::memcpy(h_data, m.h_data, size() * sizeof(T));
+                break;
+
+            default:
+                std::cerr << "E: map at " << this << " - invalit memory type\n";
+                break;
+        }
+    }
+
+    /*
+     *  Constructor based on other map object (move contructor)
+     *  @param m source map object
+    */
+    __host__ inline map(map &&m) noexcept
+        : width(m.width), height(m.height), h_data(m.h_data), d_data(m.d_data), d_this(m.d_this) {
+        m.h_data    = nullptr;
+        m.d_data    = nullptr;
+        m.d_this    = nullptr;
+        m.type      = NONE;
+    }
+
+    /*
+     *  Calculates the number of elements int the matrix
+     *  @return Number of elements in the matrix
+    */
+    __host__ __device__ inline size_t size() {
+        return (size_t)width * height;
+    }
+
+    /*
+     *  Returns pointer to device object clone (if exists)
+     *  @return Pointer to device clone or nullptr if not present
+    */
+    __host__ __device__ inline map* dev() {
+        return d_this;
+    }
+
+    #ifdef __CUDA_ARCH__
+    /*
+     *  Matrix indexation operator (device)
+     *  @param x x-coordinate of the matrix
+     *  @param y y-coordinate of the matrix
+     *  @return Matrix element on (x y) position
+    */
+    __device__ inline T& operator() (uint16_t x, uint16_t y) {
+        return d_data[(uint32_t)y * width + x];
+    }
+    #else
+    /*
+     *  Matrix indexation operator (host)
+     *  @param x x-coordinate of the matrix
+     *  @param y y-coordinate of the matrix
+     *  @return Matrix element on (x y) position
+    */
+    __host__ inline T& operator() (uint16_t x, uint16_t y) {
+        return h_data[(uint32_t)y * width + x];
+    }
+    #endif
+
+    #ifdef __CUDA_ARCH__
+    /*
+     *  Matrix indexation operator (device)
+     *  @param i index of the C-style array
+     *  @return Matrix C-style array element on index [i]
+    */
+    __device__ inline T& operator[] (uint32_t i) {
+        return d_data[i];
+    }
+    #else
+    /*
+     *  Matrix indexation operator (host)
+     *  @param i index of the C-style array
+     *  @return Matrix C-style array element on index [i]
+    */
+    __host__ inline T& operator[] (uint32_t i) {
+        return h_data[i];
+    }
+    #endif
+
+    /*
+     *  Copy assignment operator
+     *  @param m source map object
+     *  @return left operand after assignment
+    */
+    __host__ inline map& operator= (const map &m) {
+        if (&m == this) return *this;
+
+        ~map();
+
+        width   = m.width;
+        height  = m.height;
+        type    = m.type;
+
+        switch(type) {
+            case NONE:
+                h_data = nullptr;
+                d_data = nullptr;
+                d_this = nullptr;
+                break;
+
+            case HOST:
+                _alloc_host();
+                std::memcpy(h_data, m.h_data, size() * sizeof(T));
+                d_data = nullptr;
+                d_this = nullptr;
+                break;
+
+            case DEVICE:
+                _alloc_device();
+                cudaMemcpy(d_data, m.d_data, size() * sizeof(T), cudaMemcpyDeviceToDevice);
+                h_data = nullptr;
+                break;
+
+            case HOST | DEVICE:
+                _alloc_host();
+                std::memcpy(h_data, m.h_data, size() * sizeof(T));
+                _alloc_device();
+                cudaMemcpy(d_data, m.d_data, size() * sizeof(T), cudaMemcpyDeviceToDevice);
+                break;
+
+            case UNIFIED:
+                cudaMallocManaged((void**)&h_data, size() * sizeof(T));
+                d_data = h_data;
+                cudaMalloc((void**)&d_this, sizeof(*this));
+                cudaMemcpy(d_this, this, sizeof(*this), cudaMemcpyHostToDevice);
+                std::memcpy(h_data, m.h_data, size() * sizeof(T));
+                break;
+
+            default:
+                std::cerr << "E: map at " << this << " - invalit memory type\n";
+                break;
+        }
+
+        return *this;
+    }
+
+    /*
+     *  Move assignment operator
+     *  @param m source map object
+     *  @return left operand after assignment
+    */
+    __host__ inline map& operator= (const map &&m) {
+        if (&m == this) return *this;
+
+        ~map();
+
+        width       = m.width;
+        height      = m.height;
+
+        h_data      = m.h_data;
+        m.h_data    = nullptr;
+
+        d_this      = m.d_this;
+        m.d_this    = nullptr;
+
+        d_data      = m.d_data;
+        m.d_data    = nullptr;
+
+        m.type      = NONE;
+
+        return *this;
+    }
+
+    /*
+     *  Move assignment operator
+     *  @param type memory allocation type
+     *  @return void
+    */
+    __host__ inline void alloc(uint8_t type = DEFAULT) {
+        switch(type) {
+            case NONE:
+                std::cerr << "W: map at " << this << " - could no allocate type NONE\n";
+                break;
+
+            case HOST:
+                _alloc_host();
+                break;
+
+            case DEVICE:
+                _alloc_device();
+                break;
+
+            case HOST | DEVICE:
+                _alloc_host();
+                _alloc_device();
+                break;
+
+            case UNIFIED:
+                cudaMallocManaged((void**)&h_data, size() * sizeof(T));
+                d_data = h_data;
+                cudaMalloc((void**)&d_this, sizeof(*this));
+                cudaMemcpy(d_this, this, sizeof(*this), cudaMemcpyHostToDevice);
+                break;
+
+            default:
+                std::cerr << "E: map at " << this << " - invalit memory type\n";
+                break;
+        }
+    }
+
+    /*
+     *  Transfers matrix data between CPU and GPU memory
+     *  @param type transfer direction type
+     *  @return void
+    */
+    __host__ inline void transfer(TRANSFER_TYPE type) {
+        switch(type) {
+            case D2H:
+                cudaMemcpy(h_data, d_data, size() * sizeof(T), cudaMemcpyDeviceToHost);
+                break;
+            case H2D:
+                cudaMemcpy(d_data, h_data, this->size() * sizeof(T), cudaMemcpyHostToDevice);
+                break;
+            default:
+                std::cerr << "E: map at address " << this << " - invalid transfer direction\n";
+                break;
+        }
+    }
+
+    /*
+     *  Destructor
+    */
+    __host__ inline ~map() {
+        switch(type) {
+            case NONE:
+                break;
+
+            case HOST:
+                delete[] h_data;
+                break;
+
+            case DEVICE:
+                cudaFree(d_this);
+                cudaFree(d_data);
+                break;
+
+            case HOST | DEVICE:
+                delete[] h_data;
+                cudaFree(d_this);
+                cudaFree(d_data);
+                break;
+
+            case UNIFIED:
+                cudaFree(h_data);
+                break;
+
+            default:
+                std::cerr << "E: map at " << this << " - invalit memory type\n";
+                break;
+        }
+    }
+
+private:
+    __host__ void _alloc_host() {
+        h_data = new T[this->size()];
+    }
+
+    __host__ void _alloc_device() {
+        cudaMalloc((void**)&d_data, size() * sizeof(T));
+        cudaMalloc((void**)&d_this, sizeof(*this));
+        cudaMemcpy(d_this, this, sizeof(*this), cudaMemcpyHostToDevice);
+    }
 };
-
-// Default constructor
-template <class T>
-map<T>::map() {
-    width           = 0;
-    height          = 0;
-    host_data       = nullptr;
-    dev_ptr         = nullptr;
-    dev_data        = nullptr;
-}
-// Size based constructor
-template <class T>
-map<T>::map(uint16_t width, uint16_t height) {
-    this->width     = width;
-    this->height    = height;
-    host_data       = new T[width * height];
-    ptr_type        = SYS_PTR;
-    dev_ptr         = nullptr;
-    dev_data        = nullptr;
-}
-// Ptr based constructor
-template <class T>
-map<T>::map(uint16_t width, uint16_t height, void* ptr) {
-    this->width     = width;
-    this->height    = height;
-    host_data       = (uint8_t*)ptr;
-    ptr_type        = USR_PTR;
-    dev_ptr         = nullptr;
-    dev_data        = nullptr;
-}
-
-// Deep copy constructor
-template <class T>
-map<T>::map(const map<T>& m) {
-    width           = m.width;
-    height          = m.height;
-    
-    uint32_t size   = width * height;
-    host_data       = new T[size];
-    for (uint32_t i = 0; i < size; ++i) {
-        host_data[i] = m.host_data[i];
-    }
-
-    dev_ptr         = nullptr;
-    dev_data        = nullptr;
-}
-// Move constructor
-template <class T>
-map<T>::map(map<T>&& m) noexcept {
-    width           = m.width;
-    height          = m.height;
-
-    host_data       = m.host_data;
-    m.host_data     = nullptr;
-
-    dev_ptr         = m.dev_ptr;
-    m.dev_ptr       = nullptr;
-
-    dev_data        = m.dev_data;
-    m.dev_data      = nullptr;
-}
-
-#ifdef __CUDA_ARCH__
-
-template <class T>
-T& map<T>::operator() (const int32_t x, const int32_t y) {
-    return dev_data[y * width + x];
-}
-
-template <class T>
-T& map<T>::operator[] (const int32_t i) {
-    return dev_data[i];
-}
-
-#else
-
-template <class T>
-T& map<T>::operator() (const int32_t x, const int32_t y) {
-    return host_data[y * width + x];
-}
-
-template <class T>
-T& map<T>::operator[] (const int32_t i) {
-    return host_data[i];
-}
-
-#endif
-
-template <class T>
-map<T>& map<T>::operator= (const map<T>& m) {
-    if (&m == this) {
-        return *this;
-    }
-
-    width           = m.width;
-    height          = m.height;
-    
-    if (host_data) {
-        delete[] host_data;
-    }
-    if (dev_ptr) {
-        cudaFree(dev_ptr);
-    }
-    if (dev_data) {
-        cudaFree(dev_data);
-    }
-
-    uint32_t size   = width * height;
-    host_data       = new T[size];
-    for (uint32_t i = 0; i < size; ++i) {
-        host_data[i] = m.host_data[i];
-    }
-
-    dev_ptr         = nullptr;
-    dev_data        = nullptr;
-
-    return *this;
-}
-
-template <class T>
-map<T>& map<T>::operator= (map<T>&& m) noexcept {
-    if (&m == this) {
-        return *this;
-    }
-
-    if (host_data) {
-        delete[] host_data;
-    }
-    if (dev_ptr) {
-        cudaFree(dev_ptr);
-    }
-    if (dev_data) {
-        cudaFree(dev_data);
-    }
-
-    width           = m.width;
-    height          = m.height;
-
-    host_data       = m.host_data;
-    m.host_data     = nullptr;
-
-    dev_ptr         = m.dev_ptr;
-    m.dev_ptr       = nullptr;
-
-    dev_data        = m.dev_data;
-    m.dev_data      = nullptr;
-
-    return *this;
-}
-
-// Destructor
-template <class T>
-map<T>::~map() {
-    if (host_data && ptr_type == SYS_PTR){
-        delete[] host_data;
-    }
-    if (dev_ptr) {
-        cudaFree(dev_ptr);
-    }
-    if (dev_data) {
-        cudaFree(dev_data);
-    }
-}
-
-template <class T>
-void map<T>::alloc() {
-    cudaMalloc((void**)&(dev_ptr), sizeof(map<T>));
-    cudaMalloc((void**)&(dev_data), width * height * sizeof(T));
-    cudaMemcpy(dev_ptr, this, sizeof(map<T>), cudaMemcpyHostToDevice);
-}
-
-template <class T>
-void map<T>::transfer(TRANSFER_TYPE type) {
-    switch(type) {
-        case D2H:
-            cudaMemcpy(host_data, dev_data, width * height * sizeof(T), cudaMemcpyDeviceToHost);
-            break;
-        case H2D:
-            cudaMemcpy(dev_data, host_data, width * height * sizeof(T), cudaMemcpyHostToDevice);
-            break;
-        default:
-            break;
-    }
-}

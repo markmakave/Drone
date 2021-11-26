@@ -4,7 +4,7 @@ find_package(OpenCV REQUIRED)
 
 include_directories(include)
 
-set(CMAKE_CXX_FLAGS "-O3")
+set(CMAKE_CXX_FLAGS "-g")
 
 add_executable(drone
 	src/main.cu

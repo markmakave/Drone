@@ -24,8 +24,6 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/opt/cmake-3.21.1-linux-aarch64/share/cmake-3.21/Modules/CMakeSystemSpecificInformation.cmake"
   "/opt/cmake-3.21.1-linux-aarch64/share/cmake-3.21/Modules/CMakeSystemSpecificInitialize.cmake"
   "/opt/cmake-3.21.1-linux-aarch64/share/cmake-3.21/Modules/CheckCSourceCompiles.cmake"
-  "/opt/cmake-3.21.1-linux-aarch64/share/cmake-3.21/Modules/CheckFunctionExists.c"
-  "/opt/cmake-3.21.1-linux-aarch64/share/cmake-3.21/Modules/CheckIncludeFile.c.in"
   "/opt/cmake-3.21.1-linux-aarch64/share/cmake-3.21/Modules/CheckIncludeFile.cmake"
   "/opt/cmake-3.21.1-linux-aarch64/share/cmake-3.21/Modules/CheckLibraryExists.cmake"
   "/opt/cmake-3.21.1-linux-aarch64/share/cmake-3.21/Modules/Compiler/CMakeCommonCompilerMacros.cmake"

@@ -13,5 +13,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/home/lumina/dev/drone/include -isystem /usr/include/opencv4
 
-CXX_FLAGS = -O3
+CXX_FLAGS = -g
 

@@ -157,7 +157,92 @@ CMakeFiles/drone.dir/src/depth/depth.o: ../src/depth/depth.cu \
   /usr/include/stdint.h \
   /usr/include/aarch64-linux-gnu/bits/wchar.h \
   /usr/include/aarch64-linux-gnu/bits/stdint-uintn.h \
-  ../include/map.h
+  ../include/map.h \
+  /usr/include/c++/7/iostream \
+  /usr/include/c++/7/ostream \
+  /usr/include/c++/7/ios \
+  /usr/include/c++/7/iosfwd \
+  /usr/include/c++/7/bits/stringfwd.h \
+  /usr/include/c++/7/bits/memoryfwd.h \
+  /usr/include/c++/7/bits/postypes.h \
+  /usr/include/c++/7/cwchar \
+  /usr/include/wchar.h \
+  /usr/include/aarch64-linux-gnu/bits/types/wint_t.h \
+  /usr/include/aarch64-linux-gnu/bits/types/mbstate_t.h \
+  /usr/include/c++/7/bits/char_traits.h \
+  /usr/include/c++/7/bits/stl_algobase.h \
+  /usr/include/c++/7/bits/functexcept.h \
+  /usr/include/c++/7/ext/numeric_traits.h \
+  /usr/include/c++/7/bits/stl_pair.h \
+  /usr/include/c++/7/bits/stl_iterator_base_types.h \
+  /usr/include/c++/7/bits/stl_iterator_base_funcs.h \
+  /usr/include/c++/7/debug/assertions.h \
+  /usr/include/c++/7/bits/stl_iterator.h \
+  /usr/include/c++/7/bits/ptr_traits.h \
+  /usr/include/c++/7/debug/debug.h \
+  /usr/include/c++/7/bits/predefined_ops.h \
+  /usr/include/c++/7/bits/localefwd.h \
+  /usr/include/aarch64-linux-gnu/c++/7/bits/c++locale.h \
+  /usr/include/c++/7/clocale \
+  /usr/include/locale.h \
+  /usr/include/aarch64-linux-gnu/bits/locale.h \
+  /usr/include/c++/7/cctype \
+  /usr/include/ctype.h \
+  /usr/include/c++/7/bits/ios_base.h \
+  /usr/include/c++/7/ext/atomicity.h \
+  /usr/include/aarch64-linux-gnu/c++/7/bits/gthr.h \
+  /usr/include/aarch64-linux-gnu/c++/7/bits/gthr-default.h \
+  /usr/include/pthread.h \
+  /usr/include/sched.h \
+  /usr/include/aarch64-linux-gnu/bits/sched.h \
+  /usr/include/aarch64-linux-gnu/bits/cpu-set.h \
+  /usr/include/aarch64-linux-gnu/bits/setjmp.h \
+  /usr/include/aarch64-linux-gnu/c++/7/bits/atomic_word.h \
+  /usr/include/c++/7/bits/locale_classes.h \
+  /usr/include/c++/7/string \
+  /usr/include/c++/7/bits/allocator.h \
+  /usr/include/aarch64-linux-gnu/c++/7/bits/c++allocator.h \
+  /usr/include/c++/7/ext/new_allocator.h \
+  /usr/include/c++/7/bits/ostream_insert.h \
+  /usr/include/c++/7/bits/cxxabi_forced.h \
+  /usr/include/c++/7/bits/stl_function.h \
+  /usr/include/c++/7/backward/binders.h \
+  /usr/include/c++/7/bits/range_access.h \
+  /usr/include/c++/7/initializer_list \
+  /usr/include/c++/7/bits/basic_string.h \
+  /usr/include/c++/7/ext/alloc_traits.h \
+  /usr/include/c++/7/bits/alloc_traits.h \
+  /usr/include/c++/7/ext/string_conversions.h \
+  /usr/include/c++/7/cstdio \
+  /usr/include/c++/7/cerrno \
+  /usr/include/errno.h \
+  /usr/include/aarch64-linux-gnu/bits/errno.h \
+  /usr/include/linux/errno.h \
+  /usr/include/aarch64-linux-gnu/asm/errno.h \
+  /usr/include/asm-generic/errno.h \
+  /usr/include/asm-generic/errno-base.h \
+  /usr/include/c++/7/bits/functional_hash.h \
+  /usr/include/c++/7/bits/basic_string.tcc \
+  /usr/include/c++/7/bits/locale_classes.tcc \
+  /usr/include/c++/7/system_error \
+  /usr/include/aarch64-linux-gnu/c++/7/bits/error_constants.h \
+  /usr/include/c++/7/stdexcept \
+  /usr/include/c++/7/streambuf \
+  /usr/include/c++/7/bits/streambuf.tcc \
+  /usr/include/c++/7/bits/basic_ios.h \
+  /usr/include/c++/7/bits/locale_facets.h \
+  /usr/include/c++/7/cwctype \
+  /usr/include/wctype.h \
+  /usr/include/aarch64-linux-gnu/bits/wctype-wchar.h \
+  /usr/include/aarch64-linux-gnu/c++/7/bits/ctype_base.h \
+  /usr/include/c++/7/bits/streambuf_iterator.h \
+  /usr/include/aarch64-linux-gnu/c++/7/bits/ctype_inline.h \
+  /usr/include/c++/7/bits/locale_facets.tcc \
+  /usr/include/c++/7/bits/basic_ios.tcc \
+  /usr/include/c++/7/bits/ostream.tcc \
+  /usr/include/c++/7/istream \
+  /usr/include/c++/7/bits/istream.tcc \
+  /usr/include/c++/7/cstring
 
 CMakeFiles/drone.dir/src/device/camera/camera.o: ../src/device/camera/camera.cpp \
   /usr/include/stdc-predef.h \
@@ -193,7 +278,6 @@ CMakeFiles/drone.dir/src/device/camera/camera.o: ../src/device/camera/camera.cpp
   /usr/include/aarch64-linux-gnu/bits/types/FILE.h \
   /usr/include/aarch64-linux-gnu/bits/types/locale_t.h \
   /usr/include/aarch64-linux-gnu/bits/types/__locale_t.h \
-  /usr/include/aarch64-linux-gnu/bits/wchar2.h \
   /usr/include/c++/7/exception \
   /usr/include/c++/7/bits/exception.h \
   /usr/include/c++/7/bits/exception_ptr.h \
@@ -287,13 +371,10 @@ CMakeFiles/drone.dir/src/device/camera/camera.o: ../src/device/camera/camera.cpp
   /usr/include/aarch64-linux-gnu/bits/select.h \
   /usr/include/aarch64-linux-gnu/bits/types/sigset_t.h \
   /usr/include/aarch64-linux-gnu/bits/types/__sigset_t.h \
-  /usr/include/aarch64-linux-gnu/bits/select2.h \
   /usr/include/aarch64-linux-gnu/sys/sysmacros.h \
   /usr/include/aarch64-linux-gnu/bits/sysmacros.h \
   /usr/include/alloca.h \
-  /usr/include/aarch64-linux-gnu/bits/stdlib-bsearch.h \
   /usr/include/aarch64-linux-gnu/bits/stdlib-float.h \
-  /usr/include/aarch64-linux-gnu/bits/stdlib.h \
   /usr/include/c++/7/bits/std_abs.h \
   /usr/include/c++/7/cstdio \
   /usr/include/stdio.h \
@@ -301,8 +382,6 @@ CMakeFiles/drone.dir/src/device/camera/camera.o: ../src/device/camera/camera.cpp
   /usr/include/aarch64-linux-gnu/bits/_G_config.h \
   /usr/include/aarch64-linux-gnu/bits/stdio_lim.h \
   /usr/include/aarch64-linux-gnu/bits/sys_errlist.h \
-  /usr/include/aarch64-linux-gnu/bits/stdio.h \
-  /usr/include/aarch64-linux-gnu/bits/stdio2.h \
   /usr/include/c++/7/cerrno \
   /usr/include/errno.h \
   /usr/include/aarch64-linux-gnu/bits/errno.h \
@@ -334,22 +413,18 @@ CMakeFiles/drone.dir/src/device/camera/camera.o: ../src/device/camera/camera.cpp
   /usr/include/c++/7/cstring \
   /usr/include/string.h \
   /usr/include/strings.h \
-  /usr/include/aarch64-linux-gnu/bits/strings_fortified.h \
-  /usr/include/aarch64-linux-gnu/bits/string_fortified.h \
   /usr/include/unistd.h \
   /usr/include/aarch64-linux-gnu/bits/posix_opt.h \
   /usr/include/aarch64-linux-gnu/bits/environments.h \
   /usr/include/aarch64-linux-gnu/bits/confname.h \
   /usr/include/aarch64-linux-gnu/bits/getopt_posix.h \
   /usr/include/aarch64-linux-gnu/bits/getopt_core.h \
-  /usr/include/aarch64-linux-gnu/bits/unistd.h \
   /usr/include/fcntl.h \
   /usr/include/aarch64-linux-gnu/bits/fcntl.h \
   /usr/include/aarch64-linux-gnu/bits/fcntl-linux.h \
   /usr/include/aarch64-linux-gnu/bits/types/struct_iovec.h \
   /usr/include/linux/falloc.h \
   /usr/include/aarch64-linux-gnu/bits/stat.h \
-  /usr/include/aarch64-linux-gnu/bits/fcntl2.h \
   /usr/include/aarch64-linux-gnu/sys/mman.h \
   /usr/include/aarch64-linux-gnu/bits/mman.h \
   /usr/include/aarch64-linux-gnu/bits/mman-linux.h \
@@ -780,17 +855,9 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 
 /usr/include/c++/7/bits/stl_vector.h:
 
-/usr/include/c++/7/vector:
+/usr/include/c++/7/cwchar:
 
-/usr/include/c++/7/cfloat:
-
-/usr/include/opencv4/opencv2/core/saturate.hpp:
-
-/usr/include/opencv4/opencv2/core/matx.hpp:
-
-/usr/include/opencv4/opencv2/core/check.hpp:
-
-/usr/include/opencv4/opencv2/core/vsx_utils.hpp:
+/usr/include/stdc-predef.h:
 
 /usr/include/c++/7/bits/memoryfwd.h:
 
@@ -802,9 +869,7 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 
 /usr/include/c++/7/bits/nested_exception.h:
 
-/usr/include/opencv4/opencv2/core/types.hpp:
-
-/usr/include/aarch64-linux-gnu/sys/mman.h:
+/usr/include/c++/7/ostream:
 
 /usr/include/c++/7/iostream:
 
@@ -886,6 +951,8 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 
 /usr/include/c++/7/bits/stl_heap.h:
 
+/usr/include/opencv4/opencv2/core/matx.hpp:
+
 /usr/include/aarch64-linux-gnu/bits/flt-eval-method.h:
 
 /usr/include/stdint.h:
@@ -923,10 +990,6 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 /usr/lib/gcc/aarch64-linux-gnu/7/include-fixed/limits.h:
 
 /usr/include/linux/v4l2-controls.h:
-
-/usr/include/opencv4/opencv2/core/fast_math.hpp:
-
-/usr/include/aarch64-linux-gnu/bits/endian.h:
 
 /usr/include/aarch64-linux-gnu/bits/sched.h:
 
@@ -974,6 +1037,10 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 
 /usr/local/cuda-10.2/targets/aarch64-linux/include/sm_35_intrinsics.h:
 
+/usr/local/cuda-10.2/targets/aarch64-linux/include/sm_32_intrinsics.h:
+
+/usr/local/cuda-10.2/targets/aarch64-linux/include/surface_types.h:
+
 /usr/include/c++/7/ios:
 
 /usr/include/aarch64-linux-gnu/bits/stdint-intn.h:
@@ -991,8 +1058,6 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 /usr/include/linux/limits.h:
 
 /usr/include/aarch64-linux-gnu/bits/time.h:
-
-/usr/include/aarch64-linux-gnu/bits/fcntl2.h:
 
 /usr/include/opencv4/opencv2/core/cvdef.h:
 
@@ -1017,6 +1082,10 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 /usr/local/cuda-10.2/targets/aarch64-linux/include/crt/sm_70_rt.hpp:
 
 /usr/include/c++/7/bits/streambuf_iterator.h:
+
+/usr/include/c++/7/bits/predefined_ops.h:
+
+/usr/include/c++/7/system_error:
 
 /usr/include/c++/7/debug/assertions.h:
 
@@ -1059,6 +1128,10 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 /usr/local/cuda-10.2/targets/aarch64-linux/include/crt/host_defines.h:
 
 /usr/include/aarch64-linux-gnu/bits/typesizes.h:
+
+/usr/include/wchar.h:
+
+/usr/local/cuda-10.2/targets/aarch64-linux/include/texture_indirect_functions.h:
 
 /usr/include/assert.h:
 
@@ -1106,17 +1179,13 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 
 /usr/include/aarch64-linux-gnu/bits/types/clock_t.h:
 
-/usr/include/opencv4/opencv2/core/traits.hpp:
+/usr/include/aarch64-linux-gnu/sys/mman.h:
 
-/usr/include/c++/7/utility:
+/usr/include/opencv4/opencv2/core/types.hpp:
 
 /usr/include/aarch64-linux-gnu/bits/byteswap-16.h:
 
 /usr/include/c++/7/bits/cxxabi_init_exception.h:
-
-/usr/include/stdc-predef.h:
-
-/usr/include/c++/7/cwchar:
 
 /usr/include/aarch64-linux-gnu/bits/types/struct_timeval.h:
 
@@ -1130,11 +1199,15 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 
 /usr/include/aarch64-linux-gnu/bits/types/clockid_t.h:
 
+/usr/include/c++/7/vector:
+
 ../include/map.h:
 
 /usr/include/aarch64-linux-gnu/bits/types/locale_t.h:
 
 /usr/include/aarch64-linux-gnu/bits/_G_config.h:
+
+/usr/include/c++/7/cfloat:
 
 /usr/include/c++/7/new:
 
@@ -1186,18 +1259,6 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 
 /usr/include/aarch64-linux-gnu/bits/types/__mbstate_t.h:
 
-/usr/local/cuda-10.2/targets/aarch64-linux/include/texture_indirect_functions.h:
-
-/usr/include/wchar.h:
-
-/usr/include/c++/7/bits/predefined_ops.h:
-
-/usr/include/c++/7/system_error:
-
-/usr/include/c++/7/ostream:
-
-/usr/include/aarch64-linux-gnu/bits/wchar2.h:
-
 /usr/include/c++/7/bits/stl_algobase.h:
 
 /usr/include/c++/7/bits/functexcept.h:
@@ -1207,8 +1268,6 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 /usr/include/c++/7/bits/sstream.tcc:
 
 /usr/include/c++/7/bits/stl_pair.h:
-
-/usr/include/aarch64-linux-gnu/bits/string_fortified.h:
 
 /usr/include/c++/7/bits/stl_iterator_base_types.h:
 
@@ -1280,27 +1339,21 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 
 /usr/include/aarch64-linux-gnu/asm/ioctls.h:
 
+/usr/include/aarch64-linux-gnu/bits/endian.h:
+
+/usr/include/opencv4/opencv2/core/fast_math.hpp:
+
 /usr/include/c++/7/bits/alloc_traits.h:
 
 /usr/include/opencv4/opencv2/core/cv_cpu_dispatch.h:
 
 /usr/include/opencv4/opencv2/core/cvstd_wrapper.hpp:
 
-/usr/include/aarch64-linux-gnu/bits/stdlib-bsearch.h:
-
-/usr/include/aarch64-linux-gnu/bits/stdlib.h:
-
 /usr/include/c++/7/cstdio:
 
 /usr/include/c++/7/algorithm:
 
 /usr/include/aarch64-linux-gnu/bits/ioctls.h:
-
-/usr/include/aarch64-linux-gnu/bits/stdio.h:
-
-/usr/include/aarch64-linux-gnu/bits/stdio2.h:
-
-/usr/include/c++/7/bits/stl_tempbuf.h:
 
 /usr/include/c++/7/cerrno:
 
@@ -1322,15 +1375,19 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 
 /usr/include/c++/7/bits/functional_hash.h:
 
+/usr/include/opencv4/opencv2/core/check.hpp:
+
+/usr/include/c++/7/bits/basic_string.tcc:
+
 /usr/local/cuda-10.2/targets/aarch64-linux/include/cuda_surface_types.h:
 
 /usr/include/linux/v4l2-common.h:
 
-/usr/lib/gcc/aarch64-linux-gnu/7/include/float.h:
-
 /usr/include/aarch64-linux-gnu/bits/uio_lim.h:
 
 /usr/include/strings.h:
+
+/usr/lib/gcc/aarch64-linux-gnu/7/include/float.h:
 
 /usr/include/aarch64-linux-gnu/bits/confname.h:
 
@@ -1370,14 +1427,6 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 
 /usr/include/asm-generic/types.h:
 
-/usr/local/cuda-10.2/targets/aarch64-linux/include/sm_32_intrinsics.h:
-
-/usr/local/cuda-10.2/targets/aarch64-linux/include/surface_types.h:
-
-/usr/include/aarch64-linux-gnu/bits/strings_fortified.h:
-
-/usr/include/aarch64-linux-gnu/sys/ioctl.h:
-
 /usr/local/cuda-10.2/targets/aarch64-linux/include/crt/math_functions.hpp:
 
 /usr/include/unistd.h:
@@ -1387,14 +1436,6 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 /usr/include/c++/7/bits/uniform_int_dist.h:
 
 /usr/include/aarch64-linux-gnu/bits/getopt_core.h:
-
-/usr/include/c++/7/bits/basic_string.tcc:
-
-/usr/include/aarch64-linux-gnu/bits/unistd.h:
-
-/usr/include/aarch64-linux-gnu/bits/sys_errlist.h:
-
-/usr/include/c++/7/cstddef:
 
 /usr/include/c++/7/stdlib.h:
 
@@ -1412,6 +1453,10 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 
 /usr/include/aarch64-linux-gnu/bits/mman-shared.h:
 
+/usr/include/opencv4/opencv2/core/vsx_utils.hpp:
+
+/usr/include/aarch64-linux-gnu/sys/ioctl.h:
+
 /usr/include/linux/ioctl.h:
 
 /usr/include/aarch64-linux-gnu/asm/ioctl.h:
@@ -1421,8 +1466,6 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 /usr/include/aarch64-linux-gnu/asm/bitsperlong.h:
 
 /usr/include/opencv4/opencv2/videoio.hpp:
-
-/usr/include/aarch64-linux-gnu/bits/select2.h:
 
 /usr/include/asm-generic/bitsperlong.h:
 
@@ -1442,6 +1485,10 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 
 /usr/include/c++/7/climits:
 
+/usr/include/aarch64-linux-gnu/bits/sys_errlist.h:
+
+/usr/include/c++/7/cstddef:
+
 /usr/include/c++/7/array:
 
 /usr/include/c++/7/bits/stl_relops.h:
@@ -1451,6 +1498,8 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 /usr/include/c++/7/bits/stl_algo.h:
 
 /usr/include/c++/7/bits/algorithmfwd.h:
+
+/usr/include/c++/7/bits/stl_tempbuf.h:
 
 /usr/include/opencv4/opencv2/core/cvstd.hpp:
 
@@ -1489,3 +1538,9 @@ CMakeFiles/drone.dir/src/main.o: ../src/main.cu \
 /usr/include/aarch64-linux-gnu/bits/fcntl.h:
 
 /usr/include/opencv4/opencv2/core/neon_utils.hpp:
+
+/usr/include/c++/7/utility:
+
+/usr/include/opencv4/opencv2/core/traits.hpp:
+
+/usr/include/opencv4/opencv2/core/saturate.hpp:

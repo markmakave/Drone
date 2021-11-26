@@ -31,7 +31,7 @@ __global__ void depth(map<uint8_t>* left, map<uint8_t>* right, map<uint8_t>* res
             }
         }
 
-        if (cur < delta && cur < THRESOLD) {
+        if (cur < delta /*&& cur < THRESOLD*/) {
             hit = i;
             delta = cur;
         }

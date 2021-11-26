@@ -159,6 +159,91 @@ CMakeFiles/drone.dir/src/depth/depth.o
  /usr/include/aarch64-linux-gnu/bits/wchar.h
  /usr/include/aarch64-linux-gnu/bits/stdint-uintn.h
  /home/lumina/dev/drone/include/map.h
+ /usr/include/c++/7/iostream
+ /usr/include/c++/7/ostream
+ /usr/include/c++/7/ios
+ /usr/include/c++/7/iosfwd
+ /usr/include/c++/7/bits/stringfwd.h
+ /usr/include/c++/7/bits/memoryfwd.h
+ /usr/include/c++/7/bits/postypes.h
+ /usr/include/c++/7/cwchar
+ /usr/include/wchar.h
+ /usr/include/aarch64-linux-gnu/bits/types/wint_t.h
+ /usr/include/aarch64-linux-gnu/bits/types/mbstate_t.h
+ /usr/include/c++/7/bits/char_traits.h
+ /usr/include/c++/7/bits/stl_algobase.h
+ /usr/include/c++/7/bits/functexcept.h
+ /usr/include/c++/7/ext/numeric_traits.h
+ /usr/include/c++/7/bits/stl_pair.h
+ /usr/include/c++/7/bits/stl_iterator_base_types.h
+ /usr/include/c++/7/bits/stl_iterator_base_funcs.h
+ /usr/include/c++/7/debug/assertions.h
+ /usr/include/c++/7/bits/stl_iterator.h
+ /usr/include/c++/7/bits/ptr_traits.h
+ /usr/include/c++/7/debug/debug.h
+ /usr/include/c++/7/bits/predefined_ops.h
+ /usr/include/c++/7/bits/localefwd.h
+ /usr/include/aarch64-linux-gnu/c++/7/bits/c++locale.h
+ /usr/include/c++/7/clocale
+ /usr/include/locale.h
+ /usr/include/aarch64-linux-gnu/bits/locale.h
+ /usr/include/c++/7/cctype
+ /usr/include/ctype.h
+ /usr/include/c++/7/bits/ios_base.h
+ /usr/include/c++/7/ext/atomicity.h
+ /usr/include/aarch64-linux-gnu/c++/7/bits/gthr.h
+ /usr/include/aarch64-linux-gnu/c++/7/bits/gthr-default.h
+ /usr/include/pthread.h
+ /usr/include/sched.h
+ /usr/include/aarch64-linux-gnu/bits/sched.h
+ /usr/include/aarch64-linux-gnu/bits/cpu-set.h
+ /usr/include/aarch64-linux-gnu/bits/setjmp.h
+ /usr/include/aarch64-linux-gnu/c++/7/bits/atomic_word.h
+ /usr/include/c++/7/bits/locale_classes.h
+ /usr/include/c++/7/string
+ /usr/include/c++/7/bits/allocator.h
+ /usr/include/aarch64-linux-gnu/c++/7/bits/c++allocator.h
+ /usr/include/c++/7/ext/new_allocator.h
+ /usr/include/c++/7/bits/ostream_insert.h
+ /usr/include/c++/7/bits/cxxabi_forced.h
+ /usr/include/c++/7/bits/stl_function.h
+ /usr/include/c++/7/backward/binders.h
+ /usr/include/c++/7/bits/range_access.h
+ /usr/include/c++/7/initializer_list
+ /usr/include/c++/7/bits/basic_string.h
+ /usr/include/c++/7/ext/alloc_traits.h
+ /usr/include/c++/7/bits/alloc_traits.h
+ /usr/include/c++/7/ext/string_conversions.h
+ /usr/include/c++/7/cstdio
+ /usr/include/c++/7/cerrno
+ /usr/include/errno.h
+ /usr/include/aarch64-linux-gnu/bits/errno.h
+ /usr/include/linux/errno.h
+ /usr/include/aarch64-linux-gnu/asm/errno.h
+ /usr/include/asm-generic/errno.h
+ /usr/include/asm-generic/errno-base.h
+ /usr/include/c++/7/bits/functional_hash.h
+ /usr/include/c++/7/bits/basic_string.tcc
+ /usr/include/c++/7/bits/locale_classes.tcc
+ /usr/include/c++/7/system_error
+ /usr/include/aarch64-linux-gnu/c++/7/bits/error_constants.h
+ /usr/include/c++/7/stdexcept
+ /usr/include/c++/7/streambuf
+ /usr/include/c++/7/bits/streambuf.tcc
+ /usr/include/c++/7/bits/basic_ios.h
+ /usr/include/c++/7/bits/locale_facets.h
+ /usr/include/c++/7/cwctype
+ /usr/include/wctype.h
+ /usr/include/aarch64-linux-gnu/bits/wctype-wchar.h
+ /usr/include/aarch64-linux-gnu/c++/7/bits/ctype_base.h
+ /usr/include/c++/7/bits/streambuf_iterator.h
+ /usr/include/aarch64-linux-gnu/c++/7/bits/ctype_inline.h
+ /usr/include/c++/7/bits/locale_facets.tcc
+ /usr/include/c++/7/bits/basic_ios.tcc
+ /usr/include/c++/7/bits/ostream.tcc
+ /usr/include/c++/7/istream
+ /usr/include/c++/7/bits/istream.tcc
+ /usr/include/c++/7/cstring
 
 CMakeFiles/drone.dir/src/device/camera/camera.o
  /home/lumina/dev/drone/src/device/camera/camera.cpp
@@ -195,7 +280,6 @@ CMakeFiles/drone.dir/src/device/camera/camera.o
  /usr/include/aarch64-linux-gnu/bits/types/FILE.h
  /usr/include/aarch64-linux-gnu/bits/types/locale_t.h
  /usr/include/aarch64-linux-gnu/bits/types/__locale_t.h
- /usr/include/aarch64-linux-gnu/bits/wchar2.h
  /usr/include/c++/7/exception
  /usr/include/c++/7/bits/exception.h
  /usr/include/c++/7/bits/exception_ptr.h
@@ -289,13 +373,10 @@ CMakeFiles/drone.dir/src/device/camera/camera.o
  /usr/include/aarch64-linux-gnu/bits/select.h
  /usr/include/aarch64-linux-gnu/bits/types/sigset_t.h
  /usr/include/aarch64-linux-gnu/bits/types/__sigset_t.h
- /usr/include/aarch64-linux-gnu/bits/select2.h
  /usr/include/aarch64-linux-gnu/sys/sysmacros.h
  /usr/include/aarch64-linux-gnu/bits/sysmacros.h
  /usr/include/alloca.h
- /usr/include/aarch64-linux-gnu/bits/stdlib-bsearch.h
  /usr/include/aarch64-linux-gnu/bits/stdlib-float.h
- /usr/include/aarch64-linux-gnu/bits/stdlib.h
  /usr/include/c++/7/bits/std_abs.h
  /usr/include/c++/7/cstdio
  /usr/include/stdio.h
@@ -303,8 +384,6 @@ CMakeFiles/drone.dir/src/device/camera/camera.o
  /usr/include/aarch64-linux-gnu/bits/_G_config.h
  /usr/include/aarch64-linux-gnu/bits/stdio_lim.h
  /usr/include/aarch64-linux-gnu/bits/sys_errlist.h
- /usr/include/aarch64-linux-gnu/bits/stdio.h
- /usr/include/aarch64-linux-gnu/bits/stdio2.h
  /usr/include/c++/7/cerrno
  /usr/include/errno.h
  /usr/include/aarch64-linux-gnu/bits/errno.h
@@ -336,22 +415,18 @@ CMakeFiles/drone.dir/src/device/camera/camera.o
  /usr/include/c++/7/cstring
  /usr/include/string.h
  /usr/include/strings.h
- /usr/include/aarch64-linux-gnu/bits/strings_fortified.h
- /usr/include/aarch64-linux-gnu/bits/string_fortified.h
  /usr/include/unistd.h
  /usr/include/aarch64-linux-gnu/bits/posix_opt.h
  /usr/include/aarch64-linux-gnu/bits/environments.h
  /usr/include/aarch64-linux-gnu/bits/confname.h
  /usr/include/aarch64-linux-gnu/bits/getopt_posix.h
  /usr/include/aarch64-linux-gnu/bits/getopt_core.h
- /usr/include/aarch64-linux-gnu/bits/unistd.h
  /usr/include/fcntl.h
  /usr/include/aarch64-linux-gnu/bits/fcntl.h
  /usr/include/aarch64-linux-gnu/bits/fcntl-linux.h
  /usr/include/aarch64-linux-gnu/bits/types/struct_iovec.h
  /usr/include/linux/falloc.h
  /usr/include/aarch64-linux-gnu/bits/stat.h
- /usr/include/aarch64-linux-gnu/bits/fcntl2.h
  /usr/include/aarch64-linux-gnu/sys/mman.h
  /usr/include/aarch64-linux-gnu/bits/mman.h
  /usr/include/aarch64-linux-gnu/bits/mman-linux.h
