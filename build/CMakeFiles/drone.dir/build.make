@@ -101,15 +101,15 @@ CMakeFiles/drone.dir/src/device/camera/camera.o: CMakeFiles/drone.dir/flags.make
 CMakeFiles/drone.dir/src/device/camera/camera.o: ../src/device/camera/camera.cpp
 CMakeFiles/drone.dir/src/device/camera/camera.o: CMakeFiles/drone.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lumina/dev/drone/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/drone.dir/src/device/camera/camera.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/drone.dir/src/device/camera/camera.o -MF CMakeFiles/drone.dir/src/device/camera/camera.o.d -o CMakeFiles/drone.dir/src/device/camera/camera.o -c /home/lumina/dev/drone/src/device/camera/camera.cpp
+	/usr/bin/g++-7 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/drone.dir/src/device/camera/camera.o -MF CMakeFiles/drone.dir/src/device/camera/camera.o.d -o CMakeFiles/drone.dir/src/device/camera/camera.o -c /home/lumina/dev/drone/src/device/camera/camera.cpp
 
 CMakeFiles/drone.dir/src/device/camera/camera.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/drone.dir/src/device/camera/camera.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lumina/dev/drone/src/device/camera/camera.cpp > CMakeFiles/drone.dir/src/device/camera/camera.i
+	/usr/bin/g++-7 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lumina/dev/drone/src/device/camera/camera.cpp > CMakeFiles/drone.dir/src/device/camera/camera.i
 
 CMakeFiles/drone.dir/src/device/camera/camera.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/drone.dir/src/device/camera/camera.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lumina/dev/drone/src/device/camera/camera.cpp -o CMakeFiles/drone.dir/src/device/camera/camera.s
+	/usr/bin/g++-7 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lumina/dev/drone/src/device/camera/camera.cpp -o CMakeFiles/drone.dir/src/device/camera/camera.s
 
 # Object files for target drone
 drone_OBJECTS = \

@@ -64,7 +64,7 @@ __global__ void filter(map<uint8_t>* in, map<uint8_t>* out) {
     (*out)(x, y) = sum;
 }
 
-#define MEDIAN_RADIUS 3
+#define MEDIAN_RADIUS 2
 
 __device__ void sort(uint8_t* arr, int n) {
     for (int i = 0; i < n; i++) {

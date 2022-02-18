@@ -1,8 +1,10 @@
 #pragma once
-#include <cuda_runtime.h>
 #include <iostream>
 #include <cstdint>
 #include <cstring>  // for std::memcpy()
+
+#ifdef __CUDACC__
+#include <cuda_runtime.h>
 
 /*
  *  Enumerates map memory types
@@ -16,7 +18,7 @@ enum TYPE {
     DEVICE  = (1u << 1),
     UNIFIED = (1u << 2),
 };
-#define DEFAULT UNIFIED
+#define DEFAULT NONE
 
 /*
  *  Enumerates transfer directions
@@ -105,7 +107,7 @@ public:
                 break;
 
             default:
-                std::cerr << "E: map at " << this << " - invalit memory type\n";
+                std::cerr << "\033[31m" << "E: map at " << this << " - invalit memory type\n" << "\033[0m";
                 break;
         }
     }
@@ -137,6 +139,24 @@ public:
     __host__ __device__ inline map* dev() {
         return d_this;
     }
+
+    #ifdef __CUDA_ARCH__
+    /*
+     *  Returns pointer to device data
+     *  @return Pointer to device data
+    */
+    __device__ inline T* data() {
+        return d_data;
+    }
+    #else
+    /*
+     *  Returns pointer to host data
+     *  @return Pointer to host data
+    */
+    __host__ inline T* data() {
+        return h_data;
+    }
+    #endif
 
     #ifdef __CUDA_ARCH__
     /*
@@ -269,7 +289,7 @@ public:
      *  @param type memory allocation type
      *  @return void
     */
-    __host__ inline void alloc(uint8_t type = DEFAULT) {
+    __host__ inline void alloc(uint8_t type) {
         switch(type) {
             case NONE:
                 std::cerr << "W: map at " << this << " - could no allocate type NONE\n";
@@ -296,7 +316,7 @@ public:
                 break;
 
             default:
-                std::cerr << "E: map at " << this << " - invalit memory type\n";
+                std::cerr << "\033[31m" << "E: map at " << this << " - invalit memory type\n" << "\033[0m";
                 break;
         }
     }
@@ -315,7 +335,7 @@ public:
                 cudaMemcpy(d_data, h_data, this->size() * sizeof(T), cudaMemcpyHostToDevice);
                 break;
             default:
-                std::cerr << "E: map at address " << this << " - invalid transfer direction\n";
+                std::cerr << "\033[31m" << "E: map at address " << this << " - invalid transfer direction\n" << "\033[0m";
                 break;
         }
     }
@@ -348,19 +368,162 @@ public:
                 break;
 
             default:
-                std::cerr << "E: map at " << this << " - invalit memory type\n";
+                std::cerr << "\033[31m" << "E: map at " << this << " - invalit memory type\n" << "\033[0m";
                 break;
         }
     }
 
 private:
     __host__ void _alloc_host() {
-        h_data = new T[this->size()];
+        h_data = new T[size()];
     }
 
     __host__ void _alloc_device() {
         cudaMalloc((void**)&d_data, size() * sizeof(T));
         cudaMalloc((void**)&d_this, sizeof(*this));
         cudaMemcpy(d_this, this, sizeof(*this), cudaMemcpyHostToDevice);
+    }
+};
+
+#else
+
+/*
+ *  Class containing a matrix
+ *  @param width matrix width
+ *  @param height matrix height
+ *  @param *data pointer to data
+*/
+template <typename T> 
+class map {
+//private:
+public:
+    uint16_t    width, height;
+    T           *data;
+
+public:
+    /*
+     *  Default constructor
+    */
+    inline map()
+        : width(0), height(0), data(nullptr) {
+    }
+
+    /*
+     *  Constructor based on the matrix size
+     *  @param width width of the matrix
+     *  @param height height of the matrix
+     *  @param type mep memory type
+    */
+    inline map(uint16_t width, uint16_t height)
+        : width(width), height(height) {
+        _alloc();
+    }
+
+    /*
+     *  Constructor based on other map object (deep copy contructor)
+     *  @param m source matrix
+    */
+    inline map(const map &m)
+        : width(m.width), height(m.height) {
+        _alloc_host();
+        std::memcpy(data, m.h_data, size() * sizeof(T));
+    }
+
+    /*
+     *  Constructor based on other map object (move contructor)
+     *  @param m source map object
+    */
+    inline map(map &&m) noexcept
+        : width(m.width), height(m.height), data(m.data) {
+        m.data      = nullptr;
+    }
+
+    /*
+     *  Calculates the number of elements int the matrix
+     *  @return Number of elements in the matrix
+    */
+    inline size_t size() {
+        return (size_t)width * height;
+    }
+
+    /*
+     *  Returns pointer to host data
+     *  @return Pointer to host data
+    */
+    inline T* data() {
+        return data;
+    }
+
+    /*
+     *  Matrix indexation operator
+     *  @param x x-coordinate of the matrix
+     *  @param y y-coordinate of the matrix
+     *  @return Matrix element on (x y) position
+    */
+    inline T& operator() (uint16_t x, uint16_t y) {
+        return data[(uint32_t)y * width + x];
+    }
+
+    /*
+     *  Matrix indexation operator
+     *  @param i index of the C-style array
+     *  @return Matrix C-style array element on index [i]
+    */
+    inline T& operator[] (uint32_t i) {
+        return data[i];
+    }
+
+    /*
+     *  Copy assignment operator
+     *  @param m source map object
+     *  @return left operand after assignment
+    */
+    inline map& operator= (const map &m) {
+        if (&m == this) return *this;
+
+        ~map();
+
+        width   = m.width;
+        height  = m.height;
+
+        _alloc_host();
+        std::memcpy(h_data, m.data, size() * sizeof(T));
+
+        return *this;
+    }
+
+    /*
+     *  Move assignment operator
+     *  @param m source map object
+     *  @return left operand after assignment
+    */
+    inline map& operator= (const map &&m) {
+        if (&m == this) return *this;
+
+        ~map();
+
+        width       = m.width;
+        height      = m.height;
+
+        data        = m.data;
+        m.data      = nullptr;
+
+        return *this;
+    }
+
+    /*
+     *  Destructor
+    */
+    inline ~map() {
+        _free();
+    }
+
+private:
+    inline void _alloc() {
+        data = new T[size()];
+    }
+
+    inline void _free() {
+        delete[] data;
     }
 };

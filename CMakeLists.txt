@@ -4,13 +4,12 @@ find_package(OpenCV REQUIRED)
 
 include_directories(include)
 
-set(CMAKE_CXX_FLAGS "-g")
+set(CMAKE_CUDA_FLAGS "-fomit-frame-pointer -O3 -Xptxas -O3")
 
 add_executable(drone
 	src/main.cu
 
 	src/depth/depth.cu
-	src/device/camera/camera.cpp
 )
 
 target_link_libraries(drone ${OpenCV_LIBS})
