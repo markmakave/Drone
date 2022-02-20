@@ -1,3 +1,0 @@
-/home/lumina/dev/drone/build/CMakeFiles/rebuild_cache.dir
-/home/lumina/dev/drone/build/CMakeFiles/drone.dir
-/home/lumina/dev/drone/build/CMakeFiles/edit_cache.dir
