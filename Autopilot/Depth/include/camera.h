@@ -3,8 +3,6 @@
 #include <string>
 #include <vector>
 
-#include <cerrno>
-#include <cstring>
 #include <cstdint>
 
 #include <unistd.h> 
@@ -39,7 +37,7 @@ namespace lumina {
         void start() {
             int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
             if (ioctl(fd, VIDIOC_STREAMON, &type) != 0) {
-                throw "Camera stream starting failed";
+                throw std::runtime_error("Camera stream starting failed");
             }
 
             v4l2_buffer buf = {};
@@ -48,7 +46,7 @@ namespace lumina {
 
             for (buf.index = 0; buf.index < buffers.size(); ++buf.index) {
                 if(ioctl(fd, VIDIOC_QBUF, &buf) != 0) {
-                    throw "Camera queuing buffer failed";
+                    throw std::runtime_error("Camera queuing buffer failed");
                 }
             }
         }
@@ -56,28 +54,28 @@ namespace lumina {
         void stop() {
             int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
             if (ioctl(fd, VIDIOC_STREAMOFF, &type) != 0) {
-                throw "Camera stream stoping failed";
+                throw std::runtime_error("Camera stream stoping failed");
             }
         }
 
-        void operator >> (map<rgba>& frame) {
+        void operator >> (map<uint8_t>& frame) {
             if (width != frame.getw() || height != frame.geth()) {
-                throw "Camera frame different size";
+                throw std::runtime_error("Camera frame different size");
             }
             v4l2_buffer buf = {};
             buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
             buf.memory = V4L2_MEMORY_MMAP;
             
             if(ioctl(fd, VIDIOC_DQBUF, &buf) != 0) {
-                throw "Camera buffer dequeuing failed";
+                throw std::runtime_error("Camera buffer dequeuing failed");
             }
 
-            for (size_t i = 0; i < width * height; ++i) {
+            for (size_t i = 0; i < frame.size(); ++i) {
                 frame[i] = buffers[buf.index][i * 2];
             }
 
             if(ioctl(fd, VIDIOC_QBUF, &buf) != 0) {
-                throw "Camera buffer queuing failed";
+                throw std::runtime_error("Camera buffer queuing failed");
             }
         }
 
@@ -98,7 +96,7 @@ namespace lumina {
             fmt.fmt.pix.field = V4L2_FIELD_NONE;
 
             if (ioctl(fd, VIDIOC_S_FMT, &fmt) != 0) {
-                throw "Camera format setting failed";
+                throw std::runtime_error("Camera format setting failed");
             }
         }
 
@@ -109,7 +107,7 @@ namespace lumina {
             req.memory = V4L2_MEMORY_MMAP;
 
             if (ioctl(fd, VIDIOC_REQBUFS, &req) != 0) {
-                throw "Camera requesting buffer failed";
+                throw std::runtime_error("Camera requesting buffer failed");
             }
         }
 
@@ -117,16 +115,15 @@ namespace lumina {
             v4l2_buffer buf = {};
             buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
             buf.memory = V4L2_MEMORY_MMAP;
-            std::cout << "Buf length: " << buf.length << std::endl;
 
             for (buf.index = 0; buf.index < buffers.size(); ++buf.index) {
                 if (ioctl(fd, VIDIOC_QUERYBUF, &buf) != 0) {
-                    throw "Camera quering buffer failed";
+                    throw std::runtime_error("Camera quering buffer failed");
                 }
 
                 buffers[buf.index] = static_cast<uint8_t*>(mmap(NULL, buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, buf.m.offset));
                 if (buffers[buf.index] == MAP_FAILED) {
-                    throw "Camera buffer mapping failed";
+                    throw std::runtime_error("Camera buffer mapping failed");
                 }
             }
         }

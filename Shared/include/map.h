@@ -70,7 +70,7 @@ namespace lumina {
             return data[y * width + x];
         }
 
-        int size() const {
+        size_t size() const {
             return width * height;
         }
 
