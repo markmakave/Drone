@@ -35,24 +35,25 @@ namespace lumina {
         }
 
         map& operator = (const map& m) {
-            if (&m == this) return *this;
-            width = m.width;
-            height = m.height;
-            _deallocate();
-            _allocate();
-            for (size_t i = 0; i < size(); ++i) {
-                data[i] = m.data[i];
+            if (&m != this) {
+                width = m.width;
+                height = m.height;
+                _reallocate();
+                for (size_t i = 0; i < size(); ++i) {
+                    data[i] = m.data[i];
+                }
             }
             return *this;
         }
 
         map& operator = (map&& m) {
-            if (&m == this) return *this;;
-            width = m.width;
-            height = m.height;
-            _deallocate();
-            data = m.data;
-            m.data = nullptr;
+            if (&m = this) {
+                _deallocate();
+                width = m.width;
+                height = m.height;
+                data = m.data;
+                m.data = nullptr;
+            }
             return *this;
         }
 
@@ -103,6 +104,11 @@ namespace lumina {
 
         void _deallocate() {
             delete[] data;
+        }
+
+        void _reallocate() {
+            _deallocate();
+            _allocate();
         }
 
     };

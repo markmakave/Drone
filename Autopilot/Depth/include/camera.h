@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
 
 #include <cstdint>
 
@@ -21,11 +22,12 @@ namespace lumina {
 
         int width, height;
         std::vector<uint8_t*> buffers;
+        bool streaming;
 
     public:
         
         Camera(int id, int width = 640, int height = 480, int buffer_count = 10) 
-            : Device(std::string("/dev/video") + std::to_string(id)), width(width), height(height) {
+            : Device(std::string("/dev/video") + std::to_string(id)), width(width), height(height), streaming(false) {
 
             buffers.resize(buffer_count);
 
@@ -49,6 +51,8 @@ namespace lumina {
                     throw std::runtime_error("Camera queuing buffer failed");
                 }
             }
+
+            streaming = true;
         }
 
         void stop() {
@@ -56,12 +60,18 @@ namespace lumina {
             if (ioctl(fd, VIDIOC_STREAMOFF, &type) != 0) {
                 throw std::runtime_error("Camera stream stoping failed");
             }
+            streaming = false;
         }
 
         void operator >> (map<uint8_t>& frame) {
             if (width != frame.getw() || height != frame.geth()) {
                 throw std::runtime_error("Camera frame different size");
             }
+            
+            if (!streaming) {
+                start();
+            }
+
             v4l2_buffer buf = {};
             buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
             buf.memory = V4L2_MEMORY_MMAP;
@@ -79,8 +89,47 @@ namespace lumina {
             }
         }
 
+        void operator >> (map<rgba>& frame) {
+            if (width != frame.getw() || height != frame.geth()) {
+                throw std::runtime_error("Camera frame different size");
+            }
+            
+            if (!streaming) {
+                start();
+            }
+
+            v4l2_buffer buf = {};
+            buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+            buf.memory = V4L2_MEMORY_MMAP;
+            
+            if(ioctl(fd, VIDIOC_DQBUF, &buf) != 0) {
+                throw std::runtime_error("Camera buffer dequeuing failed");
+            }
+
+            std::ofstream out("out.bin");
+            out.write((char*)buffers[buf.index], buf.length);
+            out.close();
+ 
+            for (size_t pixel = 0, offset = 0; pixel < frame.size(); pixel += 2, offset += 4) {
+                uint8_t y1  = buffers[buf.index][offset + 0];
+                uint8_t u   = buffers[buf.index][offset + 1];
+                uint8_t y2  = buffers[buf.index][offset + 2];
+                uint8_t v   = buffers[buf.index][offset + 3];
+
+                frame[pixel]        = rgba(yuyv(y1, u, v));
+                frame[pixel + 1]    = rgba(yuyv(y2, u, v));
+            }
+
+            if(ioctl(fd, VIDIOC_QBUF, &buf) != 0) {
+                throw std::runtime_error("Camera buffer queuing failed");
+            }
+        }
+
         ~Camera() {
-            for (auto& buffer : buffers) {
+            if (streaming) {
+                stop();
+            }
+            for (auto buffer : buffers) {
                 munmap(buffer, width * height * 2);
             }
         } 
@@ -107,7 +156,7 @@ namespace lumina {
             req.memory = V4L2_MEMORY_MMAP;
 
             if (ioctl(fd, VIDIOC_REQBUFS, &req) != 0) {
-                throw std::runtime_error("Camera requesting buffer failed");
+                throw std::runtime_error("Camera requesting buffers failed");
             }
         }
 
