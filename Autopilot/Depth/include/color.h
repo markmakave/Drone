@@ -30,4 +30,8 @@ struct rgba {
         g = clamp((int)color.y - (0.698001 * ((int)color.v - 128)) - (0.337633 * ((int)color.u - 128)));
         a = 255;
     }
+
+    operator yuyv() {
+        return yuyv();
+    }
 };

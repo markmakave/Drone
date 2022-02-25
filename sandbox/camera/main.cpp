@@ -15,16 +15,11 @@
 
 int main() {
 
-    lumina::Camera camera(0, WIDTH, HEIGHT);
-
-    lumina::map<rgba> frame(WIDTH, HEIGHT);
-    cv::Mat image(HEIGHT, WIDTH, CV_8UC4, &frame[0]);
+    lumina::Camera camera(2, WIDTH, HEIGHT);
+    lumina::map<uint8_t> frame1, frame2;
 
     while(1) {
-        camera >> frame;
-
-        cv::imshow("frame", image);
-        cv::waitKey(1);
+        camera  >> frame1 >> frame2;
     }
 
     return 0;

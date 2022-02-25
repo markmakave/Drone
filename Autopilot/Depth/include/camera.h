@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <stdexcept>
 
 #include <cstdint>
 
@@ -15,6 +16,7 @@
 #include "device.h"
 #include "color.h"
 #include "map.h"
+#include "timer.h"
 
 namespace lumina {
 
@@ -63,9 +65,9 @@ namespace lumina {
             streaming = false;
         }
 
-        void operator >> (map<uint8_t>& frame) {
-            if (width != frame.getw() || height != frame.geth()) {
-                throw std::runtime_error("Camera frame different size");
+        Camera& operator >> (map<uint8_t>& frame) {
+            if (width != frame.width() || height != frame.height()) {
+                frame.resize(width, height);
             }
             
             if (!streaming) {
@@ -87,11 +89,13 @@ namespace lumina {
             if(ioctl(fd, VIDIOC_QBUF, &buf) != 0) {
                 throw std::runtime_error("Camera buffer queuing failed");
             }
+
+            return *this;
         }
 
-        void operator >> (map<rgba>& frame) {
-            if (width != frame.getw() || height != frame.geth()) {
-                throw std::runtime_error("Camera frame different size");
+        Camera& operator >> (map<rgba>& frame) {
+            if (width != frame.width() || height != frame.height()) {
+                frame.resize(width, height);
             }
             
             if (!streaming) {
@@ -105,10 +109,6 @@ namespace lumina {
             if(ioctl(fd, VIDIOC_DQBUF, &buf) != 0) {
                 throw std::runtime_error("Camera buffer dequeuing failed");
             }
-
-            std::ofstream out("out.bin");
-            out.write((char*)buffers[buf.index], buf.length);
-            out.close();
  
             for (size_t pixel = 0, offset = 0; pixel < frame.size(); pixel += 2, offset += 4) {
                 uint8_t y1  = buffers[buf.index][offset + 0];
@@ -123,6 +123,8 @@ namespace lumina {
             if(ioctl(fd, VIDIOC_QBUF, &buf) != 0) {
                 throw std::runtime_error("Camera buffer queuing failed");
             }
+
+            return *this;
         }
 
         ~Camera() {
