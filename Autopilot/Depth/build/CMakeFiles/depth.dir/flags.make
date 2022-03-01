@@ -13,5 +13,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/home/lumina/dev/Lumina/Autopilot/Depth/include -I/usr/local/cuda/include -isystem /usr/local/include/opencv4
 
-CXX_FLAGS = -O3 -std=gnu++1z
+CXX_FLAGS = -g -std=gnu++1z
 

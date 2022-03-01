@@ -46,6 +46,10 @@ namespace lumina {
         // Block matcher block size
         //
         int block_size;
+
+        //
+        // Validation thresold
+        //
         int thresold;
 
         //
@@ -53,6 +57,8 @@ namespace lumina {
         //
         map<uint8_t, cuda_allocator<uint8_t>> cuda_left_frame, 
                                               cuda_right_frame,
+                                              cuda_left_median,
+                                              cuda_right_median,
                                               cuda_depth_map;
 
         //
@@ -60,6 +66,8 @@ namespace lumina {
         //
         map<uint8_t, cuda_allocator<uint8_t>> * cuda_left_frame_devptr,
                                               * cuda_right_frame_devptr,
+                                              * cuda_left_median_devptr,
+                                              * cuda_right_median_devptr,
                                               * cuda_depth_map_devptr;
         
     public:
@@ -75,7 +83,6 @@ namespace lumina {
         void compute(map<uint8_t> & left_frame, map<uint8_t> & right_frame, map<uint8_t> & result);
 
     private:
-
 
         //
         // Update device maps shapes and data pointers

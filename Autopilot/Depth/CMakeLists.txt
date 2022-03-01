@@ -4,8 +4,9 @@ project(depth LANGUAGES C CXX CUDA)
 
 SET(CMAKE_CXX_STANDARD 20)
 
-set(CMAKE_CXX_FLAGS "-O3")
+set(CMAKE_CXX_FLAGS "-g")
 
+find_package(Iconv  REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(OpenCV REQUIRED)
 
