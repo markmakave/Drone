@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <stdexcept>
 
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -24,9 +25,12 @@ enum THERMAL_DEVICE {
     FAN  = 5
 };
 
-double tempreature(THERMAL_DEVICE id) {
+float tempreature(THERMAL_DEVICE id) {
     std::ifstream file(std::string("/sys/class/thermal/thermal_zone") + std::to_string(id) + "/temp");
-    double temp;
+    if (!file) {
+        throw std::runtime_error("Tempreature device not recognized");
+    }
+    float temp;
     file >> temp;
     file.close();
     return temp / 1000;
@@ -49,11 +53,6 @@ int main(int argc, char** argv) {
         right_camera >> right_frame;
 
         {
-            // double cpu_temp = tempreature(CPU);
-            // double gpu_temp = tempreature(GPU);
-            // std::cout << std::fixed << std::setprecision(1);
-            // std::cout << "CPU tempreature: " << cpu_temp << std::endl;
-            // std::cout << "GPU tempreature: " << gpu_temp << std::endl;
             matcher.compute(left_frame, right_frame, depth_map);
         }
 

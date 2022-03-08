@@ -38,27 +38,6 @@ __global__ void lumina::depth(map<uint8_t>* left, map<uint8_t>* right, map<uint8
     }
 
     (*result)(x, y) = convert_disparity(infimum_position, x, result->width());
-
-    // uint16_t hit = x;
-    // uint64_t delta = UINT64_MAX;
-
-    // for (uint16_t i = radius; i < x; ++i) {
-        
-    //     uint64_t cur = 0;
-    //     for (int _x = -radius; _x <=  radius; ++_x) {
-    //         for (int _y = -radius; _y <= radius; ++_y) {
-    //             int32_t difference = (int16_t)(*left)(x + _x, y + _y) - (int16_t)(*right)((int16_t)i + _x, y + _y);
-    //             cur += difference * difference;
-    //         }
-    //     }
-
-    //     if (cur < delta && cur < THRESOLD) {
-    //         hit = i;
-    //         delta = cur;
-    //     }
-    // }
-
-    // (*result)(x, y) = disparity2depth(x - hit);
 }
 
 __device__ int8_t core[3][3] = {{-1, -1, -1}, {-1, 9, -1}, {-1, -1, -1}};
