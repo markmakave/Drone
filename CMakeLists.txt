@@ -1,4 +1,4 @@
-project(drone LANGUAGES C CXX CUDA ASM)
+# project(drone LANGUAGES C CXX CUDA ASM)
 
 find_package(OpenCV REQUIRED)
 

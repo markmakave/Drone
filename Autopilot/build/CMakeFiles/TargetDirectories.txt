@@ -1,0 +1,3 @@
+/home/lumina/dev/Lumina/Autopilot/build/CMakeFiles/depth.dir
+/home/lumina/dev/Lumina/Autopilot/build/CMakeFiles/edit_cache.dir
+/home/lumina/dev/Lumina/Autopilot/build/CMakeFiles/rebuild_cache.dir
