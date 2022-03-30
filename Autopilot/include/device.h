@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+namespace lm {
+
 class Device {
 protected:
     int fd;
@@ -22,3 +24,5 @@ public:
     }
 
 };
+
+}

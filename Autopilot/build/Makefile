@@ -117,24 +117,24 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named depth
+# Target rules for targets named Autopilot
 
 # Build rule for target.
-depth: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 depth
-.PHONY : depth
+Autopilot: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Autopilot
+.PHONY : Autopilot
 
 # fast build rule for target.
-depth/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth.dir/build.make CMakeFiles/depth.dir/build
-.PHONY : depth/fast
+Autopilot/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Autopilot.dir/build.make CMakeFiles/Autopilot.dir/build
+.PHONY : Autopilot/fast
 
 src/kernels.o: src/kernels.cu.o
 .PHONY : src/kernels.o
 
 # target to build an object file
 src/kernels.cu.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth.dir/build.make CMakeFiles/depth.dir/src/kernels.cu.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Autopilot.dir/build.make CMakeFiles/Autopilot.dir/src/kernels.cu.o
 .PHONY : src/kernels.cu.o
 
 src/kernels.i: src/kernels.cu.i
@@ -142,7 +142,7 @@ src/kernels.i: src/kernels.cu.i
 
 # target to preprocess a source file
 src/kernels.cu.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth.dir/build.make CMakeFiles/depth.dir/src/kernels.cu.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Autopilot.dir/build.make CMakeFiles/Autopilot.dir/src/kernels.cu.i
 .PHONY : src/kernels.cu.i
 
 src/kernels.s: src/kernels.cu.s
@@ -150,7 +150,7 @@ src/kernels.s: src/kernels.cu.s
 
 # target to generate assembly for a file
 src/kernels.cu.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth.dir/build.make CMakeFiles/depth.dir/src/kernels.cu.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Autopilot.dir/build.make CMakeFiles/Autopilot.dir/src/kernels.cu.s
 .PHONY : src/kernels.cu.s
 
 src/main.o: src/main.cpp.o
@@ -158,7 +158,7 @@ src/main.o: src/main.cpp.o
 
 # target to build an object file
 src/main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth.dir/build.make CMakeFiles/depth.dir/src/main.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Autopilot.dir/build.make CMakeFiles/Autopilot.dir/src/main.cpp.o
 .PHONY : src/main.cpp.o
 
 src/main.i: src/main.cpp.i
@@ -166,7 +166,7 @@ src/main.i: src/main.cpp.i
 
 # target to preprocess a source file
 src/main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth.dir/build.make CMakeFiles/depth.dir/src/main.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Autopilot.dir/build.make CMakeFiles/Autopilot.dir/src/main.cpp.i
 .PHONY : src/main.cpp.i
 
 src/main.s: src/main.cpp.s
@@ -174,7 +174,7 @@ src/main.s: src/main.cpp.s
 
 # target to generate assembly for a file
 src/main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth.dir/build.make CMakeFiles/depth.dir/src/main.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Autopilot.dir/build.make CMakeFiles/Autopilot.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
 src/stereobm.o: src/stereobm.cpp.o
@@ -182,7 +182,7 @@ src/stereobm.o: src/stereobm.cpp.o
 
 # target to build an object file
 src/stereobm.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth.dir/build.make CMakeFiles/depth.dir/src/stereobm.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Autopilot.dir/build.make CMakeFiles/Autopilot.dir/src/stereobm.cpp.o
 .PHONY : src/stereobm.cpp.o
 
 src/stereobm.i: src/stereobm.cpp.i
@@ -190,7 +190,7 @@ src/stereobm.i: src/stereobm.cpp.i
 
 # target to preprocess a source file
 src/stereobm.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth.dir/build.make CMakeFiles/depth.dir/src/stereobm.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Autopilot.dir/build.make CMakeFiles/Autopilot.dir/src/stereobm.cpp.i
 .PHONY : src/stereobm.cpp.i
 
 src/stereobm.s: src/stereobm.cpp.s
@@ -198,7 +198,7 @@ src/stereobm.s: src/stereobm.cpp.s
 
 # target to generate assembly for a file
 src/stereobm.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth.dir/build.make CMakeFiles/depth.dir/src/stereobm.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Autopilot.dir/build.make CMakeFiles/Autopilot.dir/src/stereobm.cpp.s
 .PHONY : src/stereobm.cpp.s
 
 # Help Target
@@ -209,7 +209,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... depth"
+	@echo "... Autopilot"
 	@echo "... src/kernels.o"
 	@echo "... src/kernels.i"
 	@echo "... src/kernels.s"

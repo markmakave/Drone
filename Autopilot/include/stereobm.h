@@ -5,90 +5,99 @@
 
 #include "map.h"
 
-namespace lumina {
+namespace lm {
+
+namespace autopilot {
+
+//
+// Standart CUDA allocator class
+// uses cudaMalloc and cudaFree
+//
+template <typename Type>
+class cuda_allocator {
+    
+    cuda_allocator() {};
+
+public:
 
     //
-    // Standart CUDA allocator class
-    // uses cudaMalloc and cudaFree
+    // Allocates size enements of Type on device global memory
     //
-    template <typename Type>
-    class cuda_allocator {
-        
-        cuda_allocator() {};
-
-    public:
-
-        //
-        // Allocates size enements of Type on device global memory
-        //
-        static Type * allocate(size_t size) {
-            if (size == 0) return nullptr;
-            Type * ptr;
-            cudaMalloc((void**)&ptr, size * sizeof(*ptr));
-            return ptr;
-        }
-
-        //
-        // Deallocates memory followed by ptr
-        //
-        static void deallocate(Type * ptr, size_t size) {
-            cudaFree(ptr);
-        }
-    };
+    static Type * allocate(size_t size) {
+        if (size == 0) return nullptr;
+        Type * ptr;
+        cudaMalloc((void**)&ptr, size * sizeof(*ptr));
+        return ptr;
+    }
 
     //
-    // Stereo block matcher class
-    // contains matcher settings and frame maps
+    // Deallocates memory followed by ptr
     //
-    class StereoBM {
+    static void deallocate(Type * ptr, size_t size) {
+        cudaFree(ptr);
+    }
+};
 
-        //
-        // Block matcher block size
-        //
-        int block_size;
+//
+// Stereo block matcher class
+// contains matcher settings and frame maps
+//
+class StereoBM {
 
-        //
-        // Validation thresold
-        //
-        int thresold;
+    //
+    // Block matcher block size
+    //
+    int block_size;
 
-        //
-        // Map objects with device data pointers
-        //
-        map<uint8_t, cuda_allocator<uint8_t>> cuda_left_frame, 
-                                              cuda_right_frame,
-                                              cuda_left_median,
-                                              cuda_right_median,
-                                              cuda_depth_map;
+    //
+    // Validation thresold
+    //
+    int thresold;
 
-        //
-        // Device pointers to map objects above
-        //
-        map<uint8_t, cuda_allocator<uint8_t>> * cuda_left_frame_devptr,
-                                              * cuda_right_frame_devptr,
-                                              * cuda_left_median_devptr,
-                                              * cuda_right_median_devptr,
-                                              * cuda_depth_map_devptr;
-        
-    public:
+    float focal_length;
+    float distance;
 
-        //
-        // Default constructor
-        //
-        StereoBM(int block_size = 5, int thresold = 0);
+    //
+    // Map objects with device data pointers
+    //
+    map<uint8_t, cuda_allocator<uint8_t>> cuda_left_frame, 
+                                            cuda_right_frame,
+                                            cuda_left_median,
+                                            cuda_right_median;
+                                        
+    map<float, cuda_allocator<float>> cuda_depth_map;
 
-        //
-        // Computes disparity map
-        //
-        void compute(map<uint8_t> & left_frame, map<uint8_t> & right_frame, map<uint8_t> & result);
+    //
+    // Device pointers to map objects above
+    //
+    map<uint8_t, cuda_allocator<uint8_t>> * cuda_left_frame_devptr,
+                                            * cuda_right_frame_devptr,
+                                            * cuda_left_median_devptr,
+                                            * cuda_right_median_devptr;
 
-    private:
+    map<float, cuda_allocator<float>> * cuda_depth_map_devptr;
+    
+public:
 
-        //
-        // Update device maps shapes and data pointers
-        //
-        void _update(int width, int height);
+    //
+    // Default constructor
+    //
+    StereoBM(float focal_length, float distance, int block_size = 5, int thresold = 0);
 
-    };
+    //
+    // Computes disparity map
+    //
+    void compute(map<uint8_t> & left_frame, map<uint8_t> & right_frame, map<float> & result);
+
+private:
+
+    //
+    // Update device maps shapes and data pointers
+    //
+    void _update(int width, int height);
+
+};
+
+}
 
 }

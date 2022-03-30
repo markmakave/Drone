@@ -4,24 +4,24 @@
 #include <device_launch_parameters.h>
 
 #include "stereobm.h"
-#include "kernels.h"
+#include "kernels.cuh"
 #include "map.h"
 
 #define CUDA_BLOCK_WIDTH 8
 #define CUDA_BLOCK_HEIGHT 8
 
-using lumina::map;
+using lm::map;
 
-lumina::StereoBM::StereoBM(int block_size, int thresold)
-    : block_size(block_size), thresold(thresold) {
+lm::autopilot::StereoBM::StereoBM(float focal_length, float distance, int block_size, int thresold)
+    : focal_length(focal_length), distance(distance), block_size(block_size), thresold(thresold) {
     cuda_left_frame_devptr   = cuda_allocator<map<uint8_t, cuda_allocator<uint8_t>>>::allocate(1);
     cuda_right_frame_devptr  = cuda_allocator<map<uint8_t, cuda_allocator<uint8_t>>>::allocate(1);
     cuda_left_median_devptr  = cuda_allocator<map<uint8_t, cuda_allocator<uint8_t>>>::allocate(1);
     cuda_right_median_devptr = cuda_allocator<map<uint8_t, cuda_allocator<uint8_t>>>::allocate(1);
-    cuda_depth_map_devptr    = cuda_allocator<map<uint8_t, cuda_allocator<uint8_t>>>::allocate(1);
+    cuda_depth_map_devptr    = cuda_allocator<map<float,   cuda_allocator<float>>>  ::allocate(1);
 }
 
-void lumina::StereoBM::compute(map<uint8_t> & left_frame, map<uint8_t> & right_frame, map<uint8_t> & result) {
+void lm::autopilot::StereoBM::compute(map<uint8_t> & left_frame, map<uint8_t> & right_frame, map<float> & result) {
     if (left_frame.width() != right_frame.width() || left_frame.height() != right_frame.height()) {
         throw std::runtime_error("Frame dimensions are not equal");
     }
@@ -48,15 +48,15 @@ void lumina::StereoBM::compute(map<uint8_t> & left_frame, map<uint8_t> & right_f
     cudaDeviceSynchronize();
 
     int radius = block_size / 2;
-    void* disparity_args[] = { &cuda_left_median_devptr, &cuda_right_median_devptr, &cuda_depth_map_devptr, &radius, &thresold };
+    void* disparity_args[] = { &cuda_left_median_devptr, &cuda_right_median_devptr, &cuda_depth_map_devptr, &radius, &thresold, &focal_length, &distance };
     cudaLaunchKernel((void*)depth, blocks, threads, (void**)&disparity_args, 0);
  
     cudaDeviceSynchronize();
 
-    cudaMemcpy(result.data(), cuda_depth_map.data(), cuda_depth_map.size(), cudaMemcpyDeviceToHost);
+    cudaMemcpy(result.data(), cuda_depth_map.data(), cuda_depth_map.size() * sizeof(float), cudaMemcpyDeviceToHost);
 }
 
-void lumina::StereoBM::_update(int width, int height) {
+void lm::autopilot::StereoBM::_update(int width, int height) {
 
     cuda_left_frame  .resize(width, height);
     cuda_right_frame .resize(width, height);

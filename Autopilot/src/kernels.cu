@@ -1,15 +1,11 @@
 #include <cstring>
 
-#include "kernels.h"
+#include "kernels.cuh"
 #include "map.h"
 
-using lumina::map;
+using lm::map;
 
-__device__ uint8_t convert_disparity(int infimum, int center, int width) {
-    return UINT8_MAX * abs(center - infimum) / float(width);
-}
-
-__global__ void lumina::depth(map<uint8_t>* left, map<uint8_t>* right, map<uint8_t>* result, int radius, int thresold) {
+__global__ void lm::autopilot::depth(map<uint8_t>* left, map<uint8_t>* right, map<float>* result, int radius, int thresold, float focal_length, float distance) {
 
     int16_t x = threadIdx.x + blockIdx.x * blockDim.x;
     int16_t y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -37,12 +33,12 @@ __global__ void lumina::depth(map<uint8_t>* left, map<uint8_t>* right, map<uint8
         }
     }
 
-    (*result)(x, y) = convert_disparity(infimum_position, x, result->width());
+    (*result)(x, y) = focal_length * distance / (abs(x - infimum_position));
 }
 
 __device__ int8_t core[3][3] = {{-1, -1, -1}, {-1, 9, -1}, {-1, -1, -1}};
 
-__global__ void lumina::filter(map<uint8_t>* in, map<uint8_t>* out) {
+__global__ void lm::autopilot::filter(map<uint8_t>* in, map<uint8_t>* out) {
     int16_t x = threadIdx.x + blockIdx.x * blockDim.x;
     int16_t y = threadIdx.y + blockIdx.y * blockDim.y;
     if (x < 1 || y < 1 || x >= out->width() - 2 || y >= out->height() - 2) return;
@@ -79,7 +75,7 @@ __device__ static void sort(uint8_t* arr, int n) {
     }
 }
 
-__global__ void lumina::median(map<uint8_t>* in, map<uint8_t>* out) {
+__global__ void lm::autopilot::median(map<uint8_t>* in, map<uint8_t>* out) {
     int16_t x = threadIdx.x + blockIdx.x * blockDim.x;
     int16_t y = threadIdx.y + blockIdx.y * blockDim.y;
     if (x < MEDIAN_RADIUS || y < MEDIAN_RADIUS || x >= out->width() - MEDIAN_RADIUS - 1 || y >= out->height() - MEDIAN_RADIUS - 1) return;

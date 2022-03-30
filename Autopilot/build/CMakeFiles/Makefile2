@@ -63,7 +63,7 @@ CMAKE_BINARY_DIR = /home/lumina/dev/Lumina/Autopilot/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/depth.dir/all
+all: CMakeFiles/Autopilot.dir/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -71,34 +71,34 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/depth.dir/clean
+clean: CMakeFiles/Autopilot.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/depth.dir
+# Target rules for target CMakeFiles/Autopilot.dir
 
 # All Build rule for target.
-CMakeFiles/depth.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth.dir/build.make CMakeFiles/depth.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth.dir/build.make CMakeFiles/depth.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lumina/dev/Lumina/Autopilot/build/CMakeFiles --progress-num=1,2,3,4 "Built target depth"
-.PHONY : CMakeFiles/depth.dir/all
+CMakeFiles/Autopilot.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Autopilot.dir/build.make CMakeFiles/Autopilot.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Autopilot.dir/build.make CMakeFiles/Autopilot.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lumina/dev/Lumina/Autopilot/build/CMakeFiles --progress-num=1,2,3,4 "Built target Autopilot"
+.PHONY : CMakeFiles/Autopilot.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/depth.dir/rule: cmake_check_build_system
+CMakeFiles/Autopilot.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/lumina/dev/Lumina/Autopilot/build/CMakeFiles 4
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/depth.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/Autopilot.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/lumina/dev/Lumina/Autopilot/build/CMakeFiles 0
-.PHONY : CMakeFiles/depth.dir/rule
+.PHONY : CMakeFiles/Autopilot.dir/rule
 
 # Convenience name for target.
-depth: CMakeFiles/depth.dir/rule
-.PHONY : depth
+Autopilot: CMakeFiles/Autopilot.dir/rule
+.PHONY : Autopilot
 
 # clean rule for target.
-CMakeFiles/depth.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth.dir/build.make CMakeFiles/depth.dir/clean
-.PHONY : CMakeFiles/depth.dir/clean
+CMakeFiles/Autopilot.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Autopilot.dir/build.make CMakeFiles/Autopilot.dir/clean
+.PHONY : CMakeFiles/Autopilot.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

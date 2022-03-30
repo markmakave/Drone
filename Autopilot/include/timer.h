@@ -2,6 +2,8 @@
 #include <iostream>
 #include <chrono>
 
+namespace lm {
+
 class Timer {
 
     std::chrono::time_point<std::chrono::high_resolution_clock> begin_timepoint, end_timepoint;
@@ -34,3 +36,5 @@ public:
     }
 
 };
+
+}

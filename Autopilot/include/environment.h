@@ -1,65 +1,102 @@
-#include <vector>
-#include <array>
+#pragma once
+
 #include <fstream>
 #include <string>
 #include <cstdint>
+#include <cmath>
 
 #include "map.h"
 #include "geometry.h"
 
-namespace lumina {
+namespace lm {
 
-    class Environment {
+namespace autopilot {
 
-        std::vector<dim> dots;
+class Environment {
 
-    public:
+size_t width, height;
+float fov;
+map<dim> grid;
 
-        Environment() {
-        }
+public:
 
-        void add(const dim& v) {
-            dots.push_back(v);
-        }
+    Environment(size_t width, size_t height, float fov = 45.f)
+        : width(width), height(height), fov(fov / 180.f * M_PI) {
+        grid = map<dim>(width, height);
 
-        void export_stl(const std::string& filename = "object.stl") {
-            
-            std::ofstream file(filename);
+        dim stepX, stepY;
+        dim corner;
+        float tan = std::tan(this->fov / 2.f);
 
-            if (!file) {
-                return;
+        stepX = dim(0, -1,  0) * (tan * 2 / width);
+        stepY = dim(0,  0, -1) * (stepX.len() / width * height);
+
+        corner = dim(1, 0, 0) - stepX * (width / 2.f) - stepY * (height / 2.f);
+
+        for (size_t x = 0; x < width; ++x) {
+            for (size_t y = 0; y < height; ++y) {
+                grid(x, y) = (corner + (stepX * float(x)) + (stepY * float(y))).normal();
             }
+        }
+    }
 
-            const char header[80] = { 0 };
-            file.write(header, sizeof(header));
-            uint32_t ntriangles = dots.size() * 12;
-            file.write(reinterpret_cast<char*>(&ntriangles), sizeof(ntriangles));
+    void apply(const map<float>& depth) {
+        if (depth.size() != grid.size()) {
+            throw std::runtime_error("Maps size mismatch");
+        }
 
-            for (auto& dot : dots) {
+        for (size_t i = 0; i < grid.size(); ++i) {
+            grid[i] *= depth[i];
+        }
+    }
 
-                std::array<triangle, 4> triangles = {
-                    triangle(dot + dim(0.0, 0.0,  1.0), dot + dim(-0.5, -0.5, -0.5), dot + dim( 0.5, -0.5, -0.5)),
-                    triangle(dot + dim(0.0, 0.0,  1.0), dot + dim( 0.0,  0.5, -0.5), dot + dim(-0.5, -0.5, -0.5)),
-                    triangle(dot + dim(0.0, 0.0,  1.0), dot + dim( 0.5, -0.5, -0.5), dot + dim( 0.0,  0.5, -0.5)),
-                    triangle(dot + dim(0.0, 0.5, -0.5), dot + dim( 0.5, -0.5, -0.5), dot + dim(-0.5, -0.5, -0.5))
-                };
-                
-                for (auto& trg : triangles) {
-                    dim normal = trg.normal();
-                    file.write(reinterpret_cast<char*>(&normal), sizeof(normal));
-                    file.write(reinterpret_cast<char*>(&trg.v1), sizeof(trg.v1));
-                    file.write(reinterpret_cast<char*>(&trg.v2), sizeof(trg.v2));
-                    file.write(reinterpret_cast<char*>(&trg.v3), sizeof(trg.v3));
+    void export_stl(const std::string& filename = "object.stl") {
+        
+        std::ofstream file(filename);
+        if (!file) return;
+
+        const char header[84] = { 0 };
+        file.write(header, sizeof(header));
+
+        uint32_t ntriangles = 0;
+        for (int x = 0; x < grid.width() - 1; ++x) {
+            for (int y = 0; y < grid.height() - 1; ++y) {
+                #define EPS 1000
+                if (grid(x, y).len() < EPS && grid(x + 1, y + 1).len() < EPS) {
+                    
+                    dim normal;
                     const char skip[2] = { 0 };
-                    file.write(skip, sizeof(skip));
+
+                    if (grid(x + 1, y).len() < EPS)
+                    {
+                        triangle trg(grid(x, y), grid(x + 1, y), grid(x + 1, y + 1));
+                        file.write(reinterpret_cast<char*>(&normal), sizeof(normal));
+                        file.write(reinterpret_cast<char*>(&trg), sizeof(trg));
+                        file.write(skip, sizeof(skip));
+                        ntriangles++;
+                    }
+
+                    if (grid(x, y + 1).len() < EPS)
+                    {
+                        triangle trg(grid(x, y), grid(x, y + 1), grid(x + 1, y + 1));
+                        file.write(reinterpret_cast<char*>(&normal), sizeof(normal));
+                        file.write(reinterpret_cast<char*>(&trg), sizeof(trg));
+                        file.write(skip, sizeof(skip));
+                        ntriangles++;
+                    }
                 }
-
             }
-
-            file.close();
-
         }
 
-    };
+        file.seekp(80);
+        file.write(reinterpret_cast<char*>(&ntriangles), sizeof(ntriangles));
+
+        file.close();
+
+    }
+
+};
+
+}
 
 }
