@@ -14,12 +14,12 @@
 
 #include <cstdlib>
 
-#define DEBUG
+// #define DEBUG
 
 enum {
     WIDTH = 160, 
     HEIGHT = 120,
-    FOCAL_LENGTH = 1,
+    FOCAL_LENGTH = 10,
     DISTANCE = 220
 };
 
@@ -51,9 +51,8 @@ int main(int argc, char** argv) {
 
     // LOOP
 
-    //while (1) 
+    // while (1) 
     {
-        lm::Timer timer;
         left_camera  >> left_frame;
         right_camera >> right_frame;
 
@@ -61,9 +60,9 @@ int main(int argc, char** argv) {
             matcher.compute(left_frame, right_frame, depth_map);
         }
 
+        
+        lm::Image(lm::gradient(depth_map)).save("image.png");
     }
-
-    lm::Image(lm::gradient(depth_map)).save("image.png");
 
     env.apply(depth_map);
     env.export_stl();

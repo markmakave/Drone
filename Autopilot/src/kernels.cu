@@ -1,4 +1,4 @@
-#include <cstring>
+#include <optional>
 
 #include "kernels.cuh"
 #include "map.h"
@@ -7,22 +7,22 @@ using lm::map;
 
 __global__ void lm::autopilot::depth(map<uint8_t>* left, map<uint8_t>* right, map<float>* result, int radius, int thresold, float focal_length, float distance) {
 
-    int16_t x = threadIdx.x + blockIdx.x * blockDim.x;
-    int16_t y = threadIdx.y + blockIdx.y * blockDim.y;
+    int x = threadIdx.x + blockIdx.x * blockDim.x;
+    int y = threadIdx.y + blockIdx.y * blockDim.y;
 
-    if (x < radius || y < radius || x >= result->width() - radius - 1 || y >= result->height() - radius - 1)
+    if (x < radius || y < radius || x >= result->width() - radius || y >= result->height() - radius)
         return;
 
     int infimum_position = x;
     int infimum_value = UINT8_MAX * (radius + radius + 1) * (radius + radius + 1);
 
     for (int center = radius; center < x; ++center) {
-        int16_t cur_difference;
-        int16_t sum_difference = 0;
+        int cur_difference;
+        int sum_difference = 0;
 
         for (int x_offset = -radius; x_offset <= radius; ++x_offset) {
             for (int y_offset = -radius; y_offset <= radius; ++y_offset) {
-                cur_difference = (int16_t)(*left)(x + x_offset, y + y_offset) - (int16_t)(*right)(center + x_offset, y + y_offset);
+                cur_difference = (int)(*left)(x + x_offset, y + y_offset) - (int)(*right)(center + x_offset, y + y_offset);
                 sum_difference += abs(cur_difference);
             }
         }
