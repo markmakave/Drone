@@ -115,11 +115,12 @@ public:
         return _data;
     }
 
-    HOST DEVICE T* at(int x, int y) {
+    HOST DEVICE T& at(int x, int y) {
         if (x >= 0 && y >= 0 && x < _width && y < _height) {
             return this->operator()(x, y);
         }
-        return T();
+        static T trash_bin = {0};
+        return trash_bin;
     }
 
     void resize(int width, int height) {

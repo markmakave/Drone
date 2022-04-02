@@ -1,4 +1,4 @@
-# Install script for directory: /home/lumina/dev/Lumina/Autopilot
+# Install script for directory: /home/lumina/dev/lumina/Autopilot
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/lumina/dev/Lumina/Autopilot/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/lumina/dev/lumina/Autopilot/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

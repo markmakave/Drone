@@ -1,93 +1,84 @@
-#include <optional>
+#include <climits>
 
 #include "kernels.cuh"
 #include "map.h"
 
 using lm::map;
 
-__global__ void lm::autopilot::depth(map<uint8_t>* left, map<uint8_t>* right, map<float>* result, int radius, int thresold, float focal_length, float distance) {
-
+__global__ void lm::autopilot::disparity(const map<uint8_t>* left,
+                                         const map<uint8_t>* right,
+                                         map<int>* disparity,
+                                         const int block_radius,
+                                         const int distinction_threshold,
+                                         const int validation_threshold)
+{
+    // Current pixel position
     int x = threadIdx.x + blockIdx.x * blockDim.x;
     int y = threadIdx.y + blockIdx.y * blockDim.y;
 
-    if (x < radius || y < radius || x >= result->width() - radius || y >= result->height() - radius)
+    // Out of bounds check
+    if (x < block_radius || 
+        y < block_radius || 
+        x >= disparity->width() - block_radius || 
+        y >= disparity->height() - block_radius)
+    {
+        disparity->at(x, y) = -1;
         return;
+    }
 
+    // Initial infimum values
     int infimum_position = x;
-    int infimum_value = UINT8_MAX * (radius + radius + 1) * (radius + radius + 1);
+    int infimum_value = INT_MAX;
 
-    for (int center = radius; center < x; ++center) {
-        int cur_difference;
-        int sum_difference = 0;
+    // Right frame epipolar line walkthrough
+    for (int center = block_radius; center <= x; ++center) {
+        int hamming_sum = 0;
 
-        for (int x_offset = -radius; x_offset <= radius; ++x_offset) {
-            for (int y_offset = -radius; y_offset <= radius; ++y_offset) {
-                cur_difference = (int)(*left)(x + x_offset, y + y_offset) - (int)(*right)(center + x_offset, y + y_offset);
-                sum_difference += abs(cur_difference);
+        // Block walkthrough
+        for (int x_offset = -block_radius; x_offset <= block_radius; ++x_offset) {
+            for (int y_offset = -block_radius; y_offset <= block_radius; ++y_offset) {
+                int cur_difference = (int)(*left)(x + x_offset, y + y_offset) - (int)(*right)(center + x_offset, y + y_offset);
+                if (abs(cur_difference) > distinction_threshold)
+                    hamming_sum++;
             }
         }
 
-        if (sum_difference < infimum_value) {
+        // Selecting miminum hamming sum
+        if (hamming_sum < infimum_value) {
             infimum_position = center;
-            infimum_value = sum_difference;
+            infimum_value = hamming_sum;
         }
     }
 
-    (*result)(x, y) = focal_length * distance / (abs(x - infimum_position));
-}
-
-__device__ int8_t core[3][3] = {{-1, -1, -1}, {-1, 9, -1}, {-1, -1, -1}};
-
-__global__ void lm::autopilot::filter(map<uint8_t>* in, map<uint8_t>* out) {
-    int16_t x = threadIdx.x + blockIdx.x * blockDim.x;
-    int16_t y = threadIdx.y + blockIdx.y * blockDim.y;
-    if (x < 1 || y < 1 || x >= out->width() - 2 || y >= out->height() - 2) return;
-
-    int16_t sum = 0;
-    for (int _x = -1; _x <= 1; ++_x) {
-        for (int _y = -1; _y <= 1; ++_y) {
-            sum += (int16_t)core[_y + 1][_x + 1] * (int16_t)(*in)(x + _x, y + _y);
-        }
-    }
-
-    if (sum > 255) {
-        sum = 255;
-    } else if (sum < 0) {
-        sum = 0;
-    }
-
-
-    (*out)(x, y) = sum;
-}
-
-#define MEDIAN_RADIUS 2
-
-__device__ static void sort(uint8_t* arr, int n) {
-    for (int i = 0; i < n; i++) {
-        int minPosition = i;
-        for (int j = i + 1; j < n; j++) {
-            if (arr[minPosition] > arr[j])
-                minPosition = j;
-        }
-        uint8_t tmp = arr[minPosition];
-        arr[minPosition] = arr[i];
-        arr[i] = tmp;
+    // Validation
+    if (infimum_value <= validation_threshold) {
+        disparity->operator()(x, y) = x - infimum_position;
+    } else {
+        disparity->operator()(x, y) = -1;
     }
 }
 
-__global__ void lm::autopilot::median(map<uint8_t>* in, map<uint8_t>* out) {
-    int16_t x = threadIdx.x + blockIdx.x * blockDim.x;
-    int16_t y = threadIdx.y + blockIdx.y * blockDim.y;
-    if (x < MEDIAN_RADIUS || y < MEDIAN_RADIUS || x >= out->width() - MEDIAN_RADIUS - 1 || y >= out->height() - MEDIAN_RADIUS - 1) return;
+__global__ void lm::autopilot::depth(const map<int>* disparity,
+                                     map<float>* depth,
+                                     const float focal_lenght,
+                                     const float camera_distance)
+{
+    // Current pixel position
+    int x = threadIdx.x + blockIdx.x * blockDim.x;
+    int y = threadIdx.y + blockIdx.y * blockDim.y;
 
-    uint8_t arr[(MEDIAN_RADIUS * 2 + 1) * (MEDIAN_RADIUS * 2 + 1)];
-    for (int _x = -MEDIAN_RADIUS; _x <= MEDIAN_RADIUS; ++_x) {
-        for (int _y = -MEDIAN_RADIUS; _y <= MEDIAN_RADIUS; ++_y) {
-            arr[(_y + MEDIAN_RADIUS) * (2 * MEDIAN_RADIUS + 1) + (_x + MEDIAN_RADIUS)] = (*in)(x + _x, y + _y);
-        }
+    // Out of bounds check
+    if (x >= depth->width()|| 
+        y >= depth->height())
+    {
+        return;
     }
 
-    sort(arr, (MEDIAN_RADIUS * 2 + 1) * (MEDIAN_RADIUS * 2 + 1));
-
-    (*out)(x, y) = arr[(MEDIAN_RADIUS * 2 + 1) * (MEDIAN_RADIUS * 2 + 1) / 2];
+    // Validation
+    int current = disparity->operator()(x, y);
+    if (current <= 0) {
+        depth->operator()(x, y) = -1.f;
+    } else {
+        depth->operator()(x, y) = focal_lenght * camera_distance / current;
+    }
 }

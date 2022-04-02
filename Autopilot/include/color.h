@@ -3,7 +3,9 @@
 
 namespace lm {
 
-    uint8_t clamp(int c) {
+    typedef uint8_t grayscale;
+
+    static uint8_t clamp(int c) {
         if (c > 255)
             return 255;
         if (c < 0)

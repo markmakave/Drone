@@ -4,6 +4,7 @@
 #include <cuda_runtime.h>
 
 #include "map.h"
+#include "color.h"
 
 namespace lm {
 
@@ -20,9 +21,7 @@ class cuda_allocator {
 
 public:
 
-    //
     // Allocates size enements of Type on device global memory
-    //
     static Type * allocate(size_t size) {
         if (size == 0) return nullptr;
         Type * ptr;
@@ -30,70 +29,50 @@ public:
         return ptr;
     }
 
-    //
     // Deallocates memory followed by ptr
-    //
     static void deallocate(Type * ptr, size_t size) {
         cudaFree(ptr);
     }
 };
 
-//
 // Stereo block matcher class
 // contains matcher settings and frame maps
-//
 class StereoBM {
 
-    //
     // Block matcher block size
-    //
     int block_size;
 
-    //
-    // Validation thresold
-    //
-    int thresold;
+    // Thresolds
+    int validation_thresold;
+    int distinction_threshold;
 
+    // Camera setup parameters
     float focal_length;
-    float distance;
+    float camera_distance;
 
-    //
     // Map objects with device data pointers
-    //
-    map<uint8_t, cuda_allocator<uint8_t>> cuda_left_frame, 
-                                            cuda_right_frame,
-                                            cuda_left_median,
-                                            cuda_right_median;
-                                        
-    map<float, cuda_allocator<float>> cuda_depth_map;
-
-    //
-    // Device pointers to map objects above
-    //
-    map<uint8_t, cuda_allocator<uint8_t>> * cuda_left_frame_devptr,
-                                            * cuda_right_frame_devptr,
-                                            * cuda_left_median_devptr,
-                                            * cuda_right_median_devptr;
-
-    map<float, cuda_allocator<float>> * cuda_depth_map_devptr;
+    map<uint8_t, cuda_allocator<uint8_t>> cuda_left_frame, *cuda_left_frame_devptr,
+                                          cuda_right_frame, *cuda_right_frame_devptr;
+    map<int, cuda_allocator<int>> cuda_disparity_map, *cuda_disparity_map_devptr;
+    map<float, cuda_allocator<float>> cuda_depth_map, *cuda_depth_map_devptr;
     
 public:
 
-    //
     // Default constructor
-    //
-    StereoBM(float focal_length, float distance, int block_size = 5, int thresold = 0);
+    StereoBM(float focal_length,
+             float distance,
+             int block_size = 5,
+             int distinction_threshold = 10,
+             int validation_thresold = 10);
 
-    //
     // Computes disparity map
-    //
-    void compute(map<uint8_t> & left_frame, map<uint8_t> & right_frame, map<float> & result);
+    void compute(const map<grayscale>& left_frame,
+                 const map<grayscale>& right_frame,
+                 map<float>& depth_map);
 
 private:
 
-    //
     // Update device maps shapes and data pointers
-    //
     void _update(int width, int height);
 
 };

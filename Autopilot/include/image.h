@@ -92,16 +92,22 @@ public:
 map<rgba> gradient(const map<float>& image, const float floor = 0.f, const float roof = 100.f) {
     map<rgba> grad(image.width(), image.height());
 
-    for (size_t x = 0; x < image.width(); ++x) {
-        for (size_t y = 0; y < image.height(); ++y) {
+    for (int x = 0; x < image.width(); ++x) {
+        for (int y = 0; y < image.height(); ++y) {
             float current = image(x, y);
+
+            if (current < 0) {
+                grad(x ,y) = rgba(0, 0, 0, 0);
+                continue;
+            }
+
             if (current <= floor) {
-                grad(x ,y) = rgba(0, 0, 255);
+                grad(x ,y) = rgba(255, 0, 0);
             } else if (current >= roof) {
-                grad(x, y) = rgba(255, 0, 0);
+                grad(x, y) = rgba(0, 0, 255);
             } else {
                 float factor = (current - floor) / (roof - floor);
-                grad(x, y) = rgba(255 * (1.f - factor), 0,  255 *factor);
+                grad(x, y) = rgba(255 * factor, 0,  255 * (1.f - factor));
             }
         }
     }
