@@ -21,8 +21,17 @@ namespace lm {
 
 namespace autopilot {
 
+static int xioctl(int fd, int request, void *arg) {
+    int r;
+    do {
+        r = ioctl (fd, request, arg);
+    } while (-1 == r && EINTR == errno);
+    return r;
+}
+
 class Camera : public Device {
 
+    int id;
     int width, height;
     std::vector<uint8_t*> buffers;
     bool streaming;
@@ -30,7 +39,7 @@ class Camera : public Device {
 public:
     
     Camera(int id, int width = 640, int height = 480, int buffer_count = 10) 
-        : Device(std::string("/dev/video") + std::to_string(id)), width(width), height(height), streaming(false) {
+        : Device(std::string("/dev/video") + std::to_string(id)), width(width), height(height), streaming(false), id(id) {
 
         buffers.resize(buffer_count);
 
@@ -39,9 +48,41 @@ public:
         _allocate_buffers();
     }
 
+    void info() {
+        v4l2_capability cap;
+        if (xioctl(fd, VIDIOC_QUERYCAP, &cap) != 0) {
+            throw std::runtime_error("Camera info request failed");
+            return;
+        }
+
+        std::cout <<
+            "Camera #" << id << "\n\t" <<
+                "Driver:        " << cap.driver   << "\n\t" <<
+                "Card:          " << cap.card     << "\n\t" <<
+                "Bus info:      " << cap.bus_info << "\n\t" <<
+                "Capabilities:  \n";
+
+        
+        if(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)
+            std::cout << "\t\tv4l2 dev support capture\n";
+
+        if(cap.capabilities & V4L2_CAP_VIDEO_OUTPUT)
+            std::cout << "\t\tv4l2 dev support output\n";
+
+        if(cap.capabilities & V4L2_CAP_VIDEO_OVERLAY)
+            std::cout << "\t\tv4l2 dev support overlay\n";
+
+        if(cap.capabilities & V4L2_CAP_STREAMING)
+            std::cout << "\t\tv4l2 dev support streaming\n";
+
+        if(cap.capabilities & V4L2_CAP_READWRITE)
+            std::cout << "\t\tv4l2 dev support read write\n";
+        
+    }
+
     void start() {
         int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        if (ioctl(fd, VIDIOC_STREAMON, &type) != 0) {
+        if (xioctl(fd, VIDIOC_STREAMON, &type) != 0) {
             throw std::runtime_error("Camera stream starting failed");
         }
 
@@ -50,7 +91,7 @@ public:
         buf.memory = V4L2_MEMORY_MMAP;
 
         for (buf.index = 0; buf.index < buffers.size(); ++buf.index) {
-            if(ioctl(fd, VIDIOC_QBUF, &buf) != 0) {
+            if(xioctl(fd, VIDIOC_QBUF, &buf) != 0) {
                 throw std::runtime_error("Camera queuing buffer failed");
             }
         }
@@ -60,13 +101,13 @@ public:
 
     void stop() {
         int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        if (ioctl(fd, VIDIOC_STREAMOFF, &type) != 0) {
+        if (xioctl(fd, VIDIOC_STREAMOFF, &type) != 0) {
             throw std::runtime_error("Camera stream stoping failed");
         }
         streaming = false;
     }
 
-    Camera& operator >> (map<uint8_t>& frame) {
+    Camera& operator >> (map<grayscale>& frame) {
         if (width != frame.width() || height != frame.height()) {
             frame.resize(width, height);
         }
@@ -79,7 +120,7 @@ public:
         buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
         buf.memory = V4L2_MEMORY_MMAP;
         
-        if(ioctl(fd, VIDIOC_DQBUF, &buf) != 0) {
+        if(xioctl(fd, VIDIOC_DQBUF, &buf) != 0) {
             throw std::runtime_error("Camera buffer dequeuing failed");
         }
 
@@ -87,7 +128,7 @@ public:
             frame[i] = buffers[buf.index][i * 2];
         }
 
-        if(ioctl(fd, VIDIOC_QBUF, &buf) != 0) {
+        if(xioctl(fd, VIDIOC_QBUF, &buf) != 0) {
             throw std::runtime_error("Camera buffer queuing failed");
         }
 
@@ -107,7 +148,7 @@ public:
         buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
         buf.memory = V4L2_MEMORY_MMAP;
         
-        if(ioctl(fd, VIDIOC_DQBUF, &buf) != 0) {
+        if(xioctl(fd, VIDIOC_DQBUF, &buf) != 0) {
             throw std::runtime_error("Camera buffer dequeuing failed");
         }
 
@@ -121,7 +162,7 @@ public:
             frame[pixel + 1]    = rgba(yuyv(y2, u, v));
         }
 
-        if(ioctl(fd, VIDIOC_QBUF, &buf) != 0) {
+        if(xioctl(fd, VIDIOC_QBUF, &buf) != 0) {
             throw std::runtime_error("Camera buffer queuing failed");
         }
 
@@ -147,7 +188,7 @@ private:
         fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
         fmt.fmt.pix.field = V4L2_FIELD_NONE;
 
-        if (ioctl(fd, VIDIOC_S_FMT, &fmt) != 0) {
+        if (xioctl(fd, VIDIOC_S_FMT, &fmt) != 0) {
             throw std::runtime_error("Camera format setting failed");
         }
     }
@@ -158,7 +199,7 @@ private:
         req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
         req.memory = V4L2_MEMORY_MMAP;
 
-        if (ioctl(fd, VIDIOC_REQBUFS, &req) != 0) {
+        if (xioctl(fd, VIDIOC_REQBUFS, &req) != 0) {
             throw std::runtime_error("Camera requesting buffers failed");
         }
     }
@@ -169,7 +210,7 @@ private:
         buf.memory = V4L2_MEMORY_MMAP;
 
         for (buf.index = 0; buf.index < buffers.size(); ++buf.index) {
-            if (ioctl(fd, VIDIOC_QUERYBUF, &buf) != 0) {
+            if (xioctl(fd, VIDIOC_QUERYBUF, &buf) != 0) {
                 throw std::runtime_error("Camera quering buffer failed");
             }
 

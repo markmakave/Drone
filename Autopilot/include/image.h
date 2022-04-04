@@ -107,7 +107,7 @@ map<rgba> gradient(const map<float>& image, const float floor = 0.f, const float
                 grad(x, y) = rgba(0, 0, 255);
             } else {
                 float factor = (current - floor) / (roof - floor);
-                grad(x, y) = rgba(255 * factor, 0,  255 * (1.f - factor));
+                grad(x, y) = rgba(255 * (1.f - factor), 0,  255 * factor);
             }
         }
     }
