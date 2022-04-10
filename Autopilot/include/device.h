@@ -19,6 +19,10 @@ public:
         }
     }
 
+    virtual void info() {
+        std::cout << "No device info provided" << std::endl;
+    }
+
     ~Device() {
         close(fd);
     }

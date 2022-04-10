@@ -13,16 +13,90 @@
 
 using lm::map;
 
-lm::autopilot::StereoBM::StereoBM(float focal_length,
-                                  float camera_distance,
-                                  int block_size,
-                                  int distinction_threshold,
-                                  int validation_thresold)
+lm::StereoBM::StereoBM(float focal_length,
+                       float camera_distance,
+                       int block_size,
+                       int distinction_threshold,
+                       int validation_threshold)
     : focal_length(focal_length),
       camera_distance(camera_distance),
       block_size(block_size),
       distinction_threshold(distinction_threshold),
-      validation_thresold(validation_thresold)
+      validation_threshold(validation_threshold)
+{
+}
+
+void lm::StereoBM::compute(const map<grayscale>& left_frame,
+                           const map<grayscale>& right_frame,
+                                 map<float>&     depth_map)
+{
+    // Input frames shapes mismatch check
+    if (left_frame.width() != right_frame.width() || left_frame.height() != right_frame.height()) {
+        throw std::runtime_error("Frame dimensions mismatch");
+    }
+
+    int width = left_frame.width(), height = left_frame.height();
+    int block_radius = block_size / 2;
+
+    if (depth_map.width() != width || depth_map.height() != height) {
+        depth_map.resize(width, height);
+    }
+
+    #pragma omp parallel for
+    for (int x = 0; x < width; ++x) {
+        #pragma omp parallel for
+        for (int y = 0; y < height; ++y) {
+
+            if (x < block_radius || x > width - block_radius ||
+                y < block_radius || y > height - block_radius) {
+                depth_map(x, y) = -1.f;
+            }
+
+            // Initial infimum values
+            int infimum_position = x;
+            int infimum_value = INT_MAX;
+
+            // Right frame epipolar line walkthrough
+            for (int center = block_radius; center <= x; ++center) {
+                int hamming_sum = 0;
+
+                // Block walkthrough
+                for (int x_offset = -block_radius; x_offset <= block_radius; ++x_offset) {
+                    for (int y_offset = -block_radius; y_offset <= block_radius; ++y_offset) {
+                        int cur_difference = (int)left_frame(x + x_offset, y + y_offset) - (int)right_frame(center + x_offset, y + y_offset);
+                        if (abs(cur_difference) > distinction_threshold)
+                            hamming_sum++;
+                    }
+                }
+
+                // Selecting miminum hamming sum
+                if (hamming_sum < infimum_value) {
+                    infimum_position = center;
+                    infimum_value = hamming_sum;
+                }
+            }
+
+            if (infimum_value <= validation_threshold) {
+                depth_map(x, y) = focal_length * camera_distance / (x - infimum_position);
+            } else {
+                depth_map(x, y) = -1.f;
+            }
+        }
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+lm::cuda::StereoBM::StereoBM(float focal_length,
+                             float camera_distance,
+                             int block_size,
+                             int distinction_threshold,
+                             int validation_threshold)
+    : focal_length(focal_length),
+      camera_distance(camera_distance),
+      block_size(block_size),
+      distinction_threshold(distinction_threshold),
+      validation_threshold(validation_threshold)
 {
     cuda_left_frame_devptr    = cuda_allocator<map<grayscale, cuda_allocator<grayscale>>>::allocate(1);
     cuda_right_frame_devptr   = cuda_allocator<map<grayscale, cuda_allocator<grayscale>>>::allocate(1);
@@ -30,7 +104,7 @@ lm::autopilot::StereoBM::StereoBM(float focal_length,
     cuda_depth_map_devptr     = cuda_allocator<map<float, cuda_allocator<float>>>  ::allocate(1);
 }
 
-void lm::autopilot::StereoBM::compute(const map<grayscale> & left_frame,
+void lm::cuda::StereoBM::compute(const map<grayscale> & left_frame,
                                       const map<grayscale> & right_frame, 
                                       map<float> & result)
 {
@@ -66,7 +140,7 @@ void lm::autopilot::StereoBM::compute(const map<grayscale> & left_frame,
         &cuda_disparity_map_devptr,
         &block_radius,
         &distinction_threshold,
-        &validation_thresold
+        &validation_threshold
     };
     cudaLaunchKernel((void*)disparity, blocks, threads, (void**)&disparity_args, 0);
 
@@ -85,7 +159,7 @@ void lm::autopilot::StereoBM::compute(const map<grayscale> & left_frame,
     cudaMemcpy(result.data(), cuda_depth_map.data(), cuda_depth_map.size() * sizeof(float), cudaMemcpyDeviceToHost);
 }
 
-void lm::autopilot::StereoBM::_update(int width, int height) {
+void lm::cuda::StereoBM::_update(int width, int height) {
 
     cuda_left_frame   .resize(width, height);
     cuda_right_frame  .resize(width, height);

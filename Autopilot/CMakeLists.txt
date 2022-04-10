@@ -10,9 +10,9 @@ include_directories(/usr/local/cuda/include)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CUDA_STANDARD 17)
 
-set(CMAKE_C_FLAGS "-O3")
-set(CMAKE_CXX_FLAGS "-O3")
-set(CMAKE_CUDA_FLAGS "-O3")
+set(CMAKE_C_FLAGS "-O3 -fopenmp")
+set(CMAKE_CXX_FLAGS "-O3 -fopenmp")
+set(CMAKE_CUDA_FLAGS "")
 
 find_package(PNG REQUIRED)
 include_directories(${PNG_INCLUDE_DIR})

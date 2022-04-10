@@ -24,6 +24,14 @@ public:
         : map<rgba>(raw) {
     }
 
+    Image(const map<grayscale>& raw)
+        : map<rgba>(raw.width(), raw.height()) {
+        for (size_t i = 0; i < raw.size(); ++i) {
+            grayscale c = raw.data()[i];
+            this->data()[i] = rgba(c, c, c, 255);
+        }
+    }
+
     Image(map<rgba>&& raw)
         : map<rgba>(raw) {
     }

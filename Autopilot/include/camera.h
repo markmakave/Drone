@@ -19,8 +19,6 @@
 
 namespace lm {
 
-namespace autopilot {
-
 static int xioctl(int fd, int request, void *arg) {
     int r;
     do {
@@ -48,7 +46,7 @@ public:
         _allocate_buffers();
     }
 
-    void info() {
+    void info() override {
         v4l2_capability cap;
         if (xioctl(fd, VIDIOC_QUERYCAP, &cap) != 0) {
             throw std::runtime_error("Camera info request failed");
@@ -222,7 +220,5 @@ private:
     }
 
 };
-
-}
 
 }

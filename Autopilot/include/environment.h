@@ -10,8 +10,6 @@
 
 namespace lm {
 
-namespace autopilot {
-
 class Environment {
 
 size_t width, height;
@@ -96,7 +94,5 @@ public:
     }
 
 };
-
-}
 
 }

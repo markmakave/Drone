@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <tuple>
 
 #ifdef __CUDACC__
 #include <cuda_runtime.h>
@@ -26,6 +27,30 @@ public:
 
     static void deallocate(T* ptr, size_t size) {
         operator delete(ptr);
+    }
+};
+
+struct shape {
+    unsigned width, height;
+
+    shape(unsigned width, unsigned height)
+        : width(width), height(height) {
+    }
+
+    unsigned size() {
+        return width * height;
+    }
+
+    std::tuple<int, int> operator* () {
+        return {width, height};
+    }
+
+    bool operator== (const shape& x) {
+        return width == x.width && height == x.height;
+    }
+
+    bool operator!= (const shape& x) {
+        return !this->operator==(x);
     }
 };
 
@@ -121,6 +146,13 @@ public:
         }
         static T trash_bin = {0};
         return trash_bin;
+    }
+
+    HOST DEVICE T at(int x, int y) const {
+        if (x >= 0 && y >= 0 && x < _width && y < _height) {
+            return this->operator()(x, y);
+        }
+        return {0};
     }
 
     void resize(int width, int height) {
