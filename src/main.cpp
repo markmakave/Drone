@@ -12,18 +12,18 @@
 #include "image.h"
 #include "timer.h"
 
-#define LM_CUDA
+// #define LM_CUDA
 
 void info();
 
 enum {
-    WIDTH = 640, 
-    HEIGHT = 480,
+    WIDTH = 160, 
+    HEIGHT = 120,
 
     FOCAL_LENGTH = 40,
     CAMERA_DISTANCE = 157,
 
-    BLOCK_SIZE = 3,
+    BLOCK_SIZE = 5,
     DISTINCTION_THRESHOLD = 3,
     VALIDATION_THRESHOLD = 1,
 
@@ -60,7 +60,8 @@ int main(int argc, char** argv) {
 
     // LOOP
 
-    while (1) 
+    //while (1)
+    for (int i = 0; i < 100; ++i)
     {
         left_camera  >> left_frame;
         right_camera >> right_frame;

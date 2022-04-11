@@ -80,6 +80,8 @@ public:
                  const map<grayscale>& right_frame,
                  map<float>& depth_map);
 
+    ~StereoBM();
+
 private:
 
     void _update(int width, int height);

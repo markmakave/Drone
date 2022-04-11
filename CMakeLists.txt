@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(Autopilot LANGUAGES C CXX CUDA)
+project(autopilot LANGUAGES C CXX CUDA)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "-g")
@@ -17,13 +17,13 @@ set(CMAKE_CUDA_FLAGS "")
 find_package(PNG REQUIRED)
 include_directories(${PNG_INCLUDE_DIR})
 
-add_executable(Autopilot
+add_executable(autopilot
     ./src/main.cpp
     ./src/stereobm.cpp
     ./src/kernels.cu
 )
 
 link_directories(/usr/local/cuda/lib64)
-link_libraries(Autopilot cudart)
+link_libraries(autopilot cudart)
 
-target_link_libraries(Autopilot ${PNG_LIBRARY})
+target_link_libraries(autopilot ${PNG_LIBRARY})

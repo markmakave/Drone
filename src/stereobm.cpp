@@ -13,22 +13,27 @@
 
 using lm::map;
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 lm::StereoBM::StereoBM(float focal_length,
                        float camera_distance,
-                       int block_size,
-                       int distinction_threshold,
-                       int validation_threshold)
+                       int   block_size,
+                       int   distinction_threshold,
+                       int   validation_threshold)
+
     : focal_length(focal_length),
       camera_distance(camera_distance),
       block_size(block_size),
       distinction_threshold(distinction_threshold),
       validation_threshold(validation_threshold)
-{
+{ 
 }
 
-void lm::StereoBM::compute(const map<grayscale>& left_frame,
-                           const map<grayscale>& right_frame,
-                                 map<float>&     depth_map)
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+void lm::StereoBM::compute(const map<grayscale> &left_frame,
+                           const map<grayscale> &right_frame,
+                                 map<float>     &depth_map)
 {
     // Input frames shapes mismatch check
     if (left_frame.width() != right_frame.width() || left_frame.height() != right_frame.height()) {
@@ -47,9 +52,10 @@ void lm::StereoBM::compute(const map<grayscale>& left_frame,
         #pragma omp parallel for
         for (int y = 0; y < height; ++y) {
 
-            if (x < block_radius || x > width - block_radius ||
-                y < block_radius || y > height - block_radius) {
+            if (x < block_radius || x >= width - block_radius ||
+                y < block_radius || y >= height - block_radius) {
                 depth_map(x, y) = -1.f;
+                continue;
             }
 
             // Initial infimum values
@@ -89,9 +95,10 @@ void lm::StereoBM::compute(const map<grayscale>& left_frame,
 
 lm::cuda::StereoBM::StereoBM(float focal_length,
                              float camera_distance,
-                             int block_size,
-                             int distinction_threshold,
-                             int validation_threshold)
+                             int   block_size,
+                             int   distinction_threshold,
+                             int   validation_threshold)
+
     : focal_length(focal_length),
       camera_distance(camera_distance),
       block_size(block_size),
@@ -103,6 +110,8 @@ lm::cuda::StereoBM::StereoBM(float focal_length,
     cuda_disparity_map_devptr = cuda_allocator<map<int, cuda_allocator<int>>>::allocate(1);
     cuda_depth_map_devptr     = cuda_allocator<map<float, cuda_allocator<float>>>  ::allocate(1);
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 void lm::cuda::StereoBM::compute(const map<grayscale> & left_frame,
                                       const map<grayscale> & right_frame, 
@@ -159,6 +168,8 @@ void lm::cuda::StereoBM::compute(const map<grayscale> & left_frame,
     cudaMemcpy(result.data(), cuda_depth_map.data(), cuda_depth_map.size() * sizeof(float), cudaMemcpyDeviceToHost);
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 void lm::cuda::StereoBM::_update(int width, int height) {
 
     cuda_left_frame   .resize(width, height);
@@ -171,3 +182,14 @@ void lm::cuda::StereoBM::_update(int width, int height) {
     cudaMemcpy(cuda_disparity_map_devptr, &cuda_disparity_map, sizeof(cuda_disparity_map), cudaMemcpyHostToDevice);
     cudaMemcpy(cuda_depth_map_devptr,     &cuda_depth_map,     sizeof(cuda_depth_map),     cudaMemcpyHostToDevice);
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+lm::cuda::StereoBM::~StereoBM() {
+    cuda_allocator<map<grayscale, cuda_allocator<grayscale>>>::deallocate(cuda_left_frame_devptr, 1);
+    cuda_allocator<map<grayscale, cuda_allocator<grayscale>>>::deallocate(cuda_right_frame_devptr, 1);
+    cuda_allocator<map<int, cuda_allocator<int>>>::deallocate(cuda_disparity_map_devptr, 1);
+    cuda_allocator<map<float, cuda_allocator<float>>>::deallocate(cuda_depth_map_devptr, 1);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
