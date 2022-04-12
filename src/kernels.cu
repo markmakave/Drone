@@ -7,11 +7,12 @@ using lm::map;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-__global__ void lm::cuda::disparity(const map<uint8_t> *left,
-                                    const map<uint8_t> *right,
-                                          map<int>     *disparity,
-                                    const int           block_radius,
-                                    const int           threshold)
+__global__ void lm::cuda::disparity(
+    const map<uint8_t> *left,
+    const map<uint8_t> *right,
+          map<int>     *disparity,
+    const int           block_radius,
+    const int           threshold)
 {
     // Current pixel position
     int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -60,10 +61,11 @@ __global__ void lm::cuda::disparity(const map<uint8_t> *left,
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-__global__ void lm::cuda::depth(const map<int>   *disparity,
-                                      map<float> *depth,
-                                const float       focal_length,
-                                const float       camera_distance)
+__global__ void lm::cuda::depth(
+    const map<int>   *disparity,
+          map<float> *depth,
+    const float       focal_length,
+    const float       camera_distance)
 {
     // Current pixel position
     int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -87,7 +89,7 @@ __global__ void lm::cuda::depth(const map<int>   *disparity,
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-static __device__ lm::grayscale clamp(int x) {
+__device__ static lm::grayscale clamp(int x) {
     if (x > 255)
         return 255;
     if (x < 0)
@@ -95,9 +97,10 @@ static __device__ lm::grayscale clamp(int x) {
     return x;
 }
 
-__global__ void lm::cuda::convolve(const map<grayscale> *input,
-                                   const map<float>     *core,
-                                         map<grayscale> *output)
+__global__ void lm::cuda::convolve(
+    const map<grayscale> *input,
+    const map<float>     *core,
+          map<grayscale> *output)
 {
     // Current pixel position
     int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -120,6 +123,37 @@ __global__ void lm::cuda::convolve(const map<grayscale> *input,
     }
 
     output->operator()(x, y) = ::clamp(sum);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+__global__ void lm::cuda::median(
+    const map<grayscale> *input,
+          map<grayscale> *output,
+    const int             radius)
+{
+    int x = threadIdx.x + blockIdx.x * blockDim.x;
+    int y = threadIdx.y + blockIdx.y * blockDim.y;
+
+    // Out of bounds check
+    if (x >= input->width() || y >= input->height()) return;
+
+    lm::grayscale mapping[255] = { 0 };
+    for (int x_offset = -radius; x_offset <= radius; ++x_offset) {
+        for (int y_offset = -radius; y_offset <= radius; ++y_offset) {
+            mapping[input->at(x + x_offset, y + y_offset)]++;
+        }
+    }
+
+    int i, sum = 0;
+    for (i = 0; i < 255; ++i) {
+        sum += mapping[i];
+        if (sum > (radius * 2 + 1) * (radius * 2 + 1) / 2) {
+            break;
+        }
+    }
+
+    output->operator()(x, y) = i;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

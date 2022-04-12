@@ -39,7 +39,7 @@ class cuda_allocator {
 
 public:
 
-    static Type * allocate(size_t size) {
+    static Type * allocate(size_t size = 1) {
         if (size == 0) return nullptr;
         Type * ptr;
         cudaMalloc((void**)&ptr, size * sizeof(*ptr));
