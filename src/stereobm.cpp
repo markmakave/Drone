@@ -18,14 +18,12 @@ using lm::map;
 lm::StereoBM::StereoBM(float focal_length,
                        float camera_distance,
                        int   block_size,
-                       int   distinction_threshold,
-                       int   validation_threshold)
+                       int   threshold)
 
     : focal_length(focal_length),
       camera_distance(camera_distance),
       block_size(block_size),
-      distinction_threshold(distinction_threshold),
-      validation_threshold(validation_threshold)
+      threshold(threshold)
 { 
 }
 
@@ -64,25 +62,24 @@ void lm::StereoBM::compute(const map<grayscale> &left_frame,
 
             // Right frame epipolar line walkthrough
             for (int center = block_radius; center <= x; ++center) {
-                int hamming_sum = 0;
+                int difference = 0;
 
                 // Block walkthrough
                 for (int x_offset = -block_radius; x_offset <= block_radius; ++x_offset) {
                     for (int y_offset = -block_radius; y_offset <= block_radius; ++y_offset) {
                         int cur_difference = (int)left_frame(x + x_offset, y + y_offset) - (int)right_frame(center + x_offset, y + y_offset);
-                        if (abs(cur_difference) > distinction_threshold)
-                            hamming_sum++;
+                        difference += abs(cur_difference);
                     }
                 }
 
                 // Selecting miminum hamming sum
-                if (hamming_sum < infimum_value) {
+                if (difference < infimum_value) {
                     infimum_position = center;
-                    infimum_value = hamming_sum;
+                    infimum_value = difference;
                 }
             }
 
-            if (infimum_value <= validation_threshold) {
+            if (infimum_value <= threshold) {
                 depth_map(x, y) = focal_length * camera_distance / (x - infimum_position);
             } else {
                 depth_map(x, y) = -1.f;
@@ -96,14 +93,12 @@ void lm::StereoBM::compute(const map<grayscale> &left_frame,
 lm::cuda::StereoBM::StereoBM(float focal_length,
                              float camera_distance,
                              int   block_size,
-                             int   distinction_threshold,
-                             int   validation_threshold)
+                             int   threshold)
 
     : focal_length(focal_length),
       camera_distance(camera_distance),
       block_size(block_size),
-      distinction_threshold(distinction_threshold),
-      validation_threshold(validation_threshold)
+      threshold(threshold)
 {
     cuda_left_frame_devptr    = cuda_allocator<map<grayscale, cuda_allocator<grayscale>>>::allocate(1);
     cuda_right_frame_devptr   = cuda_allocator<map<grayscale, cuda_allocator<grayscale>>>::allocate(1);
@@ -113,9 +108,9 @@ lm::cuda::StereoBM::StereoBM(float focal_length,
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-void lm::cuda::StereoBM::compute(const map<grayscale> & left_frame,
-                                      const map<grayscale> & right_frame, 
-                                      map<float> & result)
+void lm::cuda::StereoBM::compute(const map<grayscale> &left_frame,
+                                 const map<grayscale> &right_frame, 
+                                       map<float>     &result)
 {
     // Input frames shapes mismatch check
     if (left_frame.width() != right_frame.width() || left_frame.height() != right_frame.height()) {
@@ -148,8 +143,7 @@ void lm::cuda::StereoBM::compute(const map<grayscale> & left_frame,
         &cuda_right_frame_devptr,
         &cuda_disparity_map_devptr,
         &block_radius,
-        &distinction_threshold,
-        &validation_threshold
+        &threshold
     };
     cudaLaunchKernel((void*)disparity, blocks, threads, (void**)&disparity_args, 0);
 

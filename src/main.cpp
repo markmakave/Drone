@@ -12,9 +12,7 @@
 #include "image.h"
 #include "timer.h"
 
-// #define LM_CUDA
-
-void info();
+#define LM_CUDA
 
 enum {
     WIDTH = 160, 
@@ -24,11 +22,10 @@ enum {
     CAMERA_DISTANCE = 157,
 
     BLOCK_SIZE = 5,
-    DISTINCTION_THRESHOLD = 3,
-    VALIDATION_THRESHOLD = 1,
+    THRESHOLD = 200,
 
     GRADIENT_FLOOR = 0,
-    GRADIENT_ROOF = 150
+    GRADIENT_ROOF = 500
 };
 
 int main(int argc, char** argv) {
@@ -41,7 +38,6 @@ int main(int argc, char** argv) {
     left_camera.info();
     right_camera.info();
 
-
     #ifdef LM_CUDA
     lm::cuda::StereoBM matcher
     #else
@@ -51,8 +47,7 @@ int main(int argc, char** argv) {
         FOCAL_LENGTH,
         CAMERA_DISTANCE,
         BLOCK_SIZE,
-        DISTINCTION_THRESHOLD,
-        VALIDATION_THRESHOLD
+        THRESHOLD
     );
 
     lm::map<lm::grayscale> left_frame, right_frame;
@@ -60,8 +55,7 @@ int main(int argc, char** argv) {
 
     // LOOP
 
-    //while (1)
-    for (int i = 0; i < 100; ++i)
+    while (1)
     {
         left_camera  >> left_frame;
         right_camera >> right_frame;

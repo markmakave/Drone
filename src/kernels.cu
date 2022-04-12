@@ -11,8 +11,7 @@ __global__ void lm::cuda::disparity(const map<uint8_t> *left,
                                     const map<uint8_t> *right,
                                           map<int>     *disparity,
                                     const int           block_radius,
-                                    const int           distinction_threshold,
-                                    const int           validation_threshold)
+                                    const int           threshold)
 {
     // Current pixel position
     int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -34,26 +33,25 @@ __global__ void lm::cuda::disparity(const map<uint8_t> *left,
 
     // Right frame epipolar line walkthrough
     for (int center = block_radius; center <= x; ++center) {
-        int hamming_sum = 0;
+        int difference = 0;
 
         // Block walkthrough
         for (int x_offset = -block_radius; x_offset <= block_radius; ++x_offset) {
             for (int y_offset = -block_radius; y_offset <= block_radius; ++y_offset) {
                 int cur_difference = (int)(*left)(x + x_offset, y + y_offset) - (int)(*right)(center + x_offset, y + y_offset);
-                if (abs(cur_difference) > distinction_threshold)
-                    hamming_sum++;
+                difference += abs(cur_difference);
             }
         }
 
         // Selecting miminum hamming sum
-        if (hamming_sum < infimum_value) {
+        if (difference < infimum_value) {
             infimum_position = center;
-            infimum_value = hamming_sum;
+            infimum_value = difference;
         }
     }
 
     // Validation
-    if (infimum_value <= validation_threshold) {
+    if (infimum_value <= threshold) {
         disparity->operator()(x, y) = x - infimum_position;
     } else {
         disparity->operator()(x, y) = -1;

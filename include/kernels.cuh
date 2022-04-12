@@ -14,8 +14,7 @@ __global__ void disparity(const map<uint8_t>* left,
                           const map<uint8_t>* right,
                                 map<int>* disparity,
                           const int block_radius,
-                          const int distinction_threshold,
-                          const int validation_threshold);
+                          const int threshold);
 
 __global__ void depth(const map<int>* disparity,
                             map<float>* depth,

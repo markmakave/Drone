@@ -12,8 +12,7 @@ class StereoBM {
 
     int block_size;
 
-    int validation_threshold;
-    int distinction_threshold;
+    int threshold;
 
     float focal_length;
     float camera_distance;
@@ -23,8 +22,7 @@ public:
     StereoBM(float focal_length,
              float distance,
              int block_size = 5,
-             int distinction_threshold = 10,
-             int validation_threshold = 10);
+             int threshold = 10);
 
     void compute(const map<grayscale>& left_frame,
                  const map<grayscale>& right_frame,
@@ -57,8 +55,7 @@ class StereoBM {
 
     int block_size;
 
-    int validation_threshold;
-    int distinction_threshold;
+    int threshold;
 
     float focal_length;
     float camera_distance;
@@ -73,8 +70,7 @@ public:
     StereoBM(float focal_length,
              float distance,
              int block_size = 5,
-             int distinction_threshold = 10,
-             int validation_threshold = 10);
+             int threshold = 10);
 
     void compute(const map<grayscale>& left_frame,
                  const map<grayscale>& right_frame,

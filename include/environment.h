@@ -31,7 +31,9 @@ public:
 
         corner = dim(1, 0, 0) - stepX * (width / 2.f) - stepY * (height / 2.f);
 
+        #pragma omp parallel for
         for (size_t x = 0; x < width; ++x) {
+            #pragma omp parallel for
             for (size_t y = 0; y < height; ++y) {
                 grid(x, y) = (corner + (stepX * float(x)) + (stepY * float(y))).normal();
             }
@@ -43,6 +45,7 @@ public:
             throw std::runtime_error("Maps size mismatch");
         }
 
+        #pragma omp parallel for
         for (size_t i = 0; i < grid.size(); ++i) {
             grid[i] *= depth[i];
         }
@@ -63,7 +66,7 @@ public:
                 if (grid(x, y).len() < EPS && grid(x + 1, y + 1).len() < EPS) {
                     
                     dim normal;
-                    const char skip[2] = { 0 };
+                    const char skip[2] = { 0 }; 
 
                     if (grid(x + 1, y).len() < EPS)
                     {
