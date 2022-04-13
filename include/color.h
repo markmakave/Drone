@@ -38,6 +38,10 @@ namespace lm {
         operator yuyv() {
             return yuyv();
         }
+
+        grayscale gray() const {
+            return ((int)r + g + b) / 3;
+        }
     };
 
 }

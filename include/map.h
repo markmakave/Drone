@@ -2,21 +2,12 @@
 #include <iostream>
 #include <tuple>
 
-#ifdef __CUDACC__
-#include <cuda_runtime.h>
-#define HOST __host__
-#define DEVICE __device__
-#else
-#define HOST
-#define DEVICE
-#endif
-
 namespace lm {
 
 template <typename T>
-class default_allocator {
+class allocator {
         
-    default_allocator() {};
+    allocator() {};
     
 public:
 
@@ -30,31 +21,7 @@ public:
     }
 };
 
-struct shape {
-    unsigned width, height;
-
-    shape(unsigned width, unsigned height)
-        : width(width), height(height) {
-    }
-
-    unsigned size() {
-        return width * height;
-    }
-
-    std::tuple<int, int> operator* () {
-        return {width, height};
-    }
-
-    bool operator== (const shape& x) {
-        return width == x.width && height == x.height;
-    }
-
-    bool operator!= (const shape& x) {
-        return !this->operator==(x);
-    }
-};
-
-template <typename T, typename Allocator = default_allocator<T>>
+template <typename T, typename Allocator = allocator<T>>
 class map {
 protected:
 
@@ -110,37 +77,37 @@ public:
         return *this;
     }
 
-    HOST DEVICE T& operator [] (size_t index) {
+    T& operator [] (size_t index) {
         return _data[index];
     }
-    HOST DEVICE T operator [] (size_t index) const {
+    T operator [] (size_t index) const {
         return _data[index];
     }
 
-    HOST DEVICE T& operator () (int x, int y) {
+    T& operator () (int x, int y) {
         return _data[y * _width + x];
     }
-    HOST DEVICE T operator () (int x, int y) const {
+    T operator () (int x, int y) const {
         return _data[y * _width + x];
     }
 
-    HOST DEVICE size_t size() const {
+    size_t size() const {
         return _width * _height;
     }
 
-    HOST DEVICE int width() const {
+    int width() const {
         return _width;
     }
 
-    HOST DEVICE int height() const {
+    int height() const {
         return _height;
     }
 
-    HOST DEVICE T* data() const {
+    T* data() const {
         return _data;
     }
 
-    HOST DEVICE T& at(int x, int y) {
+    T& at(int x, int y) {
         if (x >= 0 && y >= 0 && x < _width && y < _height) {
             return this->operator()(x, y);
         }
@@ -148,7 +115,7 @@ public:
         return trash_bin;
     }
 
-    HOST DEVICE T at(int x, int y) const {
+    T at(int x, int y) const {
         if (x >= 0 && y >= 0 && x < _width && y < _height) {
             return this->operator()(x, y);
         }

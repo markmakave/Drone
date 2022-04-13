@@ -8,11 +8,11 @@ using lm::map;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 __global__ void lm::cuda::disparity(
-    const map<uint8_t> *left,
-    const map<uint8_t> *right,
-          map<int>     *disparity,
-    const int           block_radius,
-    const int           threshold)
+    const map<grayscale> *left,
+    const map<grayscale> *right,
+          map<int>       *disparity,
+    const int             block_radius,
+    const int             threshold)
 {
     // Current pixel position
     int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -99,8 +99,8 @@ __device__ static lm::grayscale clamp(int x) {
 
 __global__ void lm::cuda::convolve(
     const map<grayscale> *input,
-    const map<float>     *core,
-          map<grayscale> *output)
+          map<grayscale> *output,
+    const map<float>     *core)
 {
     // Current pixel position
     int x = threadIdx.x + blockIdx.x * blockDim.x;

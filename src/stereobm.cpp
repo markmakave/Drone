@@ -15,23 +15,27 @@ using lm::map;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-lm::StereoBM::StereoBM(float focal_length,
-                       float camera_distance,
-                       int   block_size,
-                       int   threshold)
+lm::StereoBM::StereoBM(
+    float focal_length,
+    float camera_distance,
+    int   median_block_size,
+    int   disparity_block_size,
+    int   disparity_threshold)
 
     : focal_length(focal_length),
       camera_distance(camera_distance),
-      block_size(block_size),
-      threshold(threshold)
+      median_block_size(median_block_size),
+      disparity_block_size(disparity_block_size),
+      disparity_threshold(disparity_threshold)
 { 
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-void lm::StereoBM::compute(const map<grayscale> &left_frame,
-                           const map<grayscale> &right_frame,
-                                 map<float>     &depth_map)
+void lm::StereoBM::compute(
+    const map<grayscale> &left_frame,
+    const map<grayscale> &right_frame,
+          map<float>     &depth_map)
 {
     // Input frames shapes mismatch check
     if (left_frame.width() != right_frame.width() || left_frame.height() != right_frame.height()) {
@@ -39,7 +43,7 @@ void lm::StereoBM::compute(const map<grayscale> &left_frame,
     }
 
     int width = left_frame.width(), height = left_frame.height();
-    int block_radius = block_size / 2;
+    int block_radius = disparity_block_size / 2;
 
     if (depth_map.width() != width || depth_map.height() != height) {
         depth_map.resize(width, height);
@@ -79,7 +83,7 @@ void lm::StereoBM::compute(const map<grayscale> &left_frame,
                 }
             }
 
-            if (infimum_value <= threshold) {
+            if (infimum_value <= disparity_threshold) {
                 depth_map(x, y) = focal_length * camera_distance / (x - infimum_position);
             } else {
                 depth_map(x, y) = -1.f;
@@ -90,100 +94,116 @@ void lm::StereoBM::compute(const map<grayscale> &left_frame,
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-lm::cuda::StereoBM::StereoBM(float focal_length,
-                             float camera_distance,
-                             int   block_size,
-                             int   threshold)
+lm::cuda::StereoBM::StereoBM(
+    float focal_length,
+    float camera_distance,
+    int   median_block_size,
+    int   disparity_block_size,
+    int   disparity_threshold)
 
     : focal_length(focal_length),
       camera_distance(camera_distance),
-      block_size(block_size),
-      threshold(threshold)
+      median_block_size(median_block_size),
+      disparity_block_size(disparity_block_size),
+      disparity_threshold(disparity_threshold)
 {
-    cuda_left_frame_devptr    = cuda_allocator<map<grayscale, cuda_allocator<grayscale>>>::allocate(1);
-    cuda_right_frame_devptr   = cuda_allocator<map<grayscale, cuda_allocator<grayscale>>>::allocate(1);
-    cuda_disparity_map_devptr = cuda_allocator<map<int, cuda_allocator<int>>>::allocate(1);
-    cuda_depth_map_devptr     = cuda_allocator<map<float, cuda_allocator<float>>>  ::allocate(1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-void lm::cuda::StereoBM::compute(const map<grayscale> &left_frame,
-                                 const map<grayscale> &right_frame, 
-                                       map<float>     &result)
+void lm::cuda::StereoBM::compute(
+    const lm::map<grayscale> &left_frame,
+    const lm::map<grayscale> &right_frame, 
+          lm::map<float>     &result)
 {
     // Input frames shapes mismatch check
     if (left_frame.width() != right_frame.width() || left_frame.height() != right_frame.height()) {
         throw std::runtime_error("Frame dimensions mismatch");
     }
 
+    int width = left_frame.width(), height = left_frame.height();
+
     // Imput frames and internal frames shapes mismatch check
-    if (left_frame.width() != cuda_left_frame.width() || left_frame.height() != cuda_left_frame.height()) {
-        _update(left_frame.width(), left_frame.height());
+    if (cuda_left_frame.width() != width || cuda_left_frame.height() != height) {
+        this->_update(width, height);
     }
 
     // Output frame mismatch check
-    if (left_frame.width() != result.width() || left_frame.height() != result.height()) {
-        result.resize(left_frame.width(), left_frame.height());
+    if (result.width() != width || result.height() != height) {
+        result.resize(width, height);
     }
     
     // Copying raw frames data to the cude device
-    cudaMemcpy(cuda_left_frame.data(),  left_frame.data(),  left_frame.size(),  cudaMemcpyHostToDevice);
-    cudaMemcpy(cuda_right_frame.data(), right_frame.data(), right_frame.size(), cudaMemcpyHostToDevice);
+    cuda_left_frame.inject(left_frame);
+    cuda_right_frame.inject(right_frame);
+
+    auto left_devptr         = cuda_left_frame.devptr();
+    auto right_devptr        = cuda_right_frame.devptr();
+    auto left_median_devptr  = cuda_left_median.devptr();
+    auto right_median_devptr = cuda_right_median.devptr();
+    auto disparity_devptr    = cuda_disparity.devptr();
+    auto depth_devptr        = cuda_depth.devptr();
 
     // Internal cuda structures initialize
-    dim3 blocks(cuda_depth_map.width() / CUDA_BLOCK_WIDTH + 1, 
-                cuda_depth_map.height() / CUDA_BLOCK_HEIGHT + 1), 
+    dim3 blocks(width / CUDA_BLOCK_WIDTH + 1, height / CUDA_BLOCK_HEIGHT + 1), 
          threads(CUDA_BLOCK_WIDTH, CUDA_BLOCK_HEIGHT);
 
+    // Median kernel launch sequence
+    int median_block_radius = median_block_size / 2;
+
+    void* left_median_args[] = {
+        &left_devptr,
+        &left_median_devptr,
+        &median_block_radius
+    };
+    cudaLaunchKernel((void*)median, blocks, threads, (void**)&left_median_args, 0);
+
+    void* right_median_args[] = {
+        &right_devptr,
+        &right_median_devptr,
+        &median_block_radius
+    };
+    cudaLaunchKernel((void*)median, blocks, threads, (void**)&right_median_args, 0);
+
     // Disparity kernel launch sequence
-    int block_radius = block_size / 2;
+    int disparity_block_radius = disparity_block_size / 2;
+
     void* disparity_args[] = {
-        &cuda_left_frame_devptr, 
-        &cuda_right_frame_devptr,
-        &cuda_disparity_map_devptr,
-        &block_radius,
-        &threshold
+        &left_median_devptr, 
+        &right_median_devptr,
+        &disparity_devptr,
+        &disparity_block_radius,
+        &disparity_threshold
     };
     cudaLaunchKernel((void*)disparity, blocks, threads, (void**)&disparity_args, 0);
 
-    cudaDeviceSynchronize();
-
     // Depth kernel launch sequence
     void* depth_args[] = {
-        &cuda_disparity_map_devptr,
-        &cuda_depth_map_devptr,
+        &disparity_devptr,
+        &depth_devptr,
         &focal_length,
         &camera_distance
     };
     cudaLaunchKernel((void*)depth, blocks, threads, (void**)&depth_args, 0);
+    
+    cudaDeviceSynchronize();
 
     // Taking the result
-    cudaMemcpy(result.data(), cuda_depth_map.data(), cuda_depth_map.size() * sizeof(float), cudaMemcpyDeviceToHost);
+    cuda_depth.extract(result);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 void lm::cuda::StereoBM::_update(int width, int height) {
+    cuda_left_frame  .resize(width, height);
+    cuda_right_frame .resize(width, height);
 
-    cuda_left_frame   .resize(width, height);
-    cuda_right_frame  .resize(width, height);
-    cuda_disparity_map.resize(width, height);
-    cuda_depth_map    .resize(width, height);
+    cuda_left_median .resize(width, height);
+    cuda_right_median.resize(width, height);
 
-    cudaMemcpy(cuda_left_frame_devptr,    &cuda_left_frame,    sizeof(cuda_left_frame),    cudaMemcpyHostToDevice);
-    cudaMemcpy(cuda_right_frame_devptr,   &cuda_right_frame,   sizeof(cuda_right_frame),   cudaMemcpyHostToDevice);
-    cudaMemcpy(cuda_disparity_map_devptr, &cuda_disparity_map, sizeof(cuda_disparity_map), cudaMemcpyHostToDevice);
-    cudaMemcpy(cuda_depth_map_devptr,     &cuda_depth_map,     sizeof(cuda_depth_map),     cudaMemcpyHostToDevice);
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-lm::cuda::StereoBM::~StereoBM() {
-    cuda_allocator<map<grayscale, cuda_allocator<grayscale>>>::deallocate(cuda_left_frame_devptr, 1);
-    cuda_allocator<map<grayscale, cuda_allocator<grayscale>>>::deallocate(cuda_right_frame_devptr, 1);
-    cuda_allocator<map<int, cuda_allocator<int>>>::deallocate(cuda_disparity_map_devptr, 1);
-    cuda_allocator<map<float, cuda_allocator<float>>>::deallocate(cuda_depth_map_devptr, 1);
+    cuda_disparity   .resize(width, height);
+    
+    cuda_depth       .resize(width, height);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

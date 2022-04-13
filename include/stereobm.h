@@ -4,79 +4,63 @@
 #include <cuda_runtime.h>
 
 #include "map.h"
+#include "cuda_map.h"
 #include "color.h"
 
 namespace lm {
 
 class StereoBM {
 
-    int block_size;
-
-    int threshold;
-
     float focal_length;
     float camera_distance;
+    int median_block_size;
+    int disparity_block_size;
+    int disparity_threshold;
 
 public:
 
-    StereoBM(float focal_length,
-             float distance,
-             int block_size = 5,
-             int threshold = 10);
+    StereoBM(
+        float focal_length,
+        float camera_distance,
+        int   median_block_size    = 5,
+        int   disparity_block_size = 5,
+        int   disparity_threshold  = 10);
 
-    void compute(const map<grayscale>& left_frame,
-                 const map<grayscale>& right_frame,
-                 map<float>& depth_map);
+    void compute(
+        const map<grayscale> &left_frame,
+        const map<grayscale> &right_frame,
+              map<float>     &depth_map);
 
 };
 
 namespace cuda {
 
-template <typename Type>
-class cuda_allocator {
-    
-    cuda_allocator() {};
-
-public:
-
-    static Type * allocate(size_t size = 1) {
-        if (size == 0) return nullptr;
-        Type * ptr;
-        cudaMalloc((void**)&ptr, size * sizeof(*ptr));
-        return ptr;
-    }
-
-    static void deallocate(Type * ptr, size_t size) {
-        cudaFree(ptr);
-    }
-};
-
 class StereoBM {
-
-    int block_size;
-
-    int threshold;
 
     float focal_length;
     float camera_distance;
+    int median_block_size;
+    int disparity_block_size;
+    int disparity_threshold;
 
-    map<uint8_t, cuda_allocator<uint8_t>> cuda_left_frame, *cuda_left_frame_devptr,
-                                          cuda_right_frame, *cuda_right_frame_devptr;
-    map<int, cuda_allocator<int>> cuda_disparity_map, *cuda_disparity_map_devptr;
-    map<float, cuda_allocator<float>> cuda_depth_map, *cuda_depth_map_devptr;
+    map<grayscale> cuda_left_frame, cuda_right_frame;
+    map<grayscale> cuda_left_median, cuda_right_median;
+    map<int>       cuda_disparity;
+    map<float>     cuda_depth;
     
 public:
 
-    StereoBM(float focal_length,
-             float distance,
-             int block_size = 5,
-             int threshold = 10);
+    StereoBM(
+        float focal_length,
+        float camera_distance,
+        int   median_block_size    = 5,
+        int   disparity_block_size = 5,
+        int   disparity_threshold  = 10);
 
-    void compute(const map<grayscale>& left_frame,
-                 const map<grayscale>& right_frame,
-                 map<float>& depth_map);
-
-    ~StereoBM();
+    void compute(
+        const lm::map<grayscale> &left_frame,
+        const lm::map<grayscale> &right_frame,
+              lm::map<float>     &depth_map);
 
 private:
 

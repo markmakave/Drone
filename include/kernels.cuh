@@ -10,12 +10,16 @@ namespace lm {
 
 namespace cuda {
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 __global__ void disparity(
-    const map<uint8_t> *left,
-    const map<uint8_t> *right,
-          map<int>     *disparity,
-    const int           block_radius,
-    const int           threshold);
+    const map<grayscale> *left,
+    const map<grayscale> *right,
+          map<int>       *disparity,
+    const int             block_radius,
+    const int             threshold);
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 __global__ void depth(
     const map<int>   *disparity,
@@ -23,15 +27,21 @@ __global__ void depth(
     const float       focal_lenght,
     const float       camera_distance);
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 __global__ void convolve(
     const map<grayscale> *input,
-    const map<float>     *core,
-          map<grayscale> *output);
+          map<grayscale> *output,
+    const map<float>     *core);
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 __global__ void median(
     const map<grayscale> *input,
           map<grayscale> *output,
     const int             radius);
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 }
 

@@ -21,8 +21,10 @@ enum {
     FOCAL_LENGTH = 40,
     CAMERA_DISTANCE = 157,
 
-    BLOCK_SIZE = 5,
-    THRESHOLD = 200,
+    MEDIAN_BLOCK_SIZE = 5,
+
+    BLOCK_SIZE = 10,
+    THRESHOLD = 2000,
 
     GRADIENT_FLOOR = 0,
     GRADIENT_ROOF = 500
@@ -46,6 +48,7 @@ int main(int argc, char** argv) {
     (
         FOCAL_LENGTH,
         CAMERA_DISTANCE,
+        MEDIAN_BLOCK_SIZE,
         BLOCK_SIZE,
         THRESHOLD
     );

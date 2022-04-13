@@ -13,44 +13,78 @@
 
 namespace lm {
 
-class Image : public map<rgba> {
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+static std::string extension(const std::string& filename) {
+    size_t match = filename.rfind('.');
+    if (match != std::string::npos)
+        return filename.substr(match + 1);
+    return "";
+}
+
+template <typename T>
+class Image : public map<T> {
+
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <>
+class Image<rgba> : public map<rgba> {
 public:
 
     Image(int width = 0, int height = 0)
-        : map<rgba>(width, height) {
+        : map(width, height) {
     }
 
-    Image(const map<rgba>& raw)
-        : map<rgba>(raw) {
-    }
-
-    Image(const map<grayscale>& raw)
-        : map<rgba>(raw.width(), raw.height()) {
-        for (size_t i = 0; i < raw.size(); ++i) {
-            grayscale c = raw.data()[i];
-            this->data()[i] = rgba(c, c, c, 255);
-        }
+    Image(const map& raw)
+        : map(raw) {
     }
 
     Image(map<rgba>&& raw)
         : map<rgba>(raw) {
     }
 
-    Image& vflip() {
-        
-        return *this;
-    }
+    Image(const std::string& filename) {
+        static const std::map<std::string, std::function<void()>> ops {
+            {"tga", [this, &filename]()
+                {
 
-    Image& hflip() {
+                }
+            },
+            {"png", [this, &filename]()
+                {
+                    png::image<png::rgba_pixel> image(filename);
+                    this->resize(image.get_width(), image.get_height());
+                    for (int x = 0; x < image.get_width(); ++x) {
+                        for (int y = 0; y < image.get_height(); ++y) {
+                            auto color = image[y][x];
+                            this->operator()(x, y) = rgba(color.red, color.green, color.blue, color.alpha);
+                        }
+                    }
+                }
+            },
+            {"ppm", [this, &filename]()
+                {
+                    
+                }
+            }
+        };
 
-        return *this;
+        std::string ext = extension(filename);
+        auto op = ops.find(ext);
+        if (op != ops.end()) {
+            op->second();
+        } else {
+            throw std::runtime_error("Invalid file extension");
+        }
     }
 
     void save(const std::string& filename) {
 
         static const std::map<std::string, std::function<void()>> ops = {
-            {
-                ".tga", [this, &filename](){
+            {"tga", [this, &filename]()
+                {
                     std::ofstream file(filename);
                     if (!file) return;
 
@@ -68,8 +102,8 @@ public:
                     file.close();
                 }
             },
-            {
-                ".png", [this, &filename](){
+            {"png", [this, &filename]()
+                {
                     png::image<png::rgba_pixel> png_image(this->width(), this->height());
                     for (size_t y = 0; y < png_image.get_height(); ++y) {
                         for (size_t x = 0; x < png_image.get_width(); ++x) {
@@ -82,20 +116,117 @@ public:
             }
         };
 
-        size_t match = filename.rfind('.');
-        if (match != std::string::npos) {
-            std::string extension = filename.substr(match);
-            std::map<std::string, std::function<void()>>::const_iterator op;
-            if ((op = ops.find(extension)) != ops.end()) {
-                op->second();
-            } else {
-                throw std::runtime_error("Invalid file extension");
-            }
+        std::string ext = extension(filename);
+        std::map<std::string, std::function<void()>>::const_iterator op;
+        if ((op = ops.find(ext)) != ops.end()) {
+            op->second();
         } else {
-            throw std::runtime_error("Invalid file name");
+            throw std::runtime_error("Invalid file extension");
         }
     }
 };
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <>
+class Image<grayscale> : public map<grayscale> {
+public:
+
+    Image(int width = 0, int height = 0)
+        : map(width, height) {
+    }
+
+    Image(const map& raw)
+        : map(raw) {
+    }
+
+    Image(map&& raw)
+        : map(raw) {
+    }
+
+    Image(const std::string& filename) {
+        auto _this = this;
+        static const std::map<std::string, std::function<void()>> ops {
+            {"tga", [&_this, &filename]()
+                {
+
+                }
+            },
+            {"png", [&_this, &filename]()
+                {
+                    png::image<png::rgba_pixel> image(filename);
+                    _this->resize(image.get_width(), image.get_height());
+                    for (int x = 0; x < image.get_width(); ++x) {
+                        for (int y = 0; y < image.get_height(); ++y) {
+                            auto color = image[y][x];
+                            _this->operator()(x, y) = rgba(color.red, color.green, color.blue, 255).gray();
+                        }
+                    }
+                }
+            },
+            {"ppm", [&_this, &filename]()
+                {
+                    
+                }
+            }
+        };
+
+        std::string ext = extension(filename);
+        auto op = ops.find(ext);
+        if (op != ops.end()) {
+            op->second();
+        } else {
+            throw std::runtime_error("Invalid file extension");
+        }
+    }
+
+    void save(const std::string& filename) {
+
+        static const std::map<std::string, std::function<void()>> ops = {
+            {"tga", [this, &filename]()
+                {
+                    std::ofstream file(filename);
+                    if (!file) return;
+
+                    static char header[] = {
+                        0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00,
+                        0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF,
+                        0x20, 0b00101000
+                    };
+
+                    *(reinterpret_cast<uint16_t*>(&header[12])) = this->width();
+                    *(reinterpret_cast<uint16_t*>(&header[14])) = this->height();
+                    
+                    file.write(header, sizeof(header));
+                    file.write(reinterpret_cast<char*>(this->data()), this->size() * sizeof(rgba));
+                    file.close();
+                }
+            },
+            {"png", [this, &filename]()
+                {
+                    png::image<png::rgba_pixel> png_image(this->width(), this->height());
+                    for (size_t y = 0; y < png_image.get_height(); ++y) {
+                        for (size_t x = 0; x < png_image.get_width(); ++x) {
+                            lm::grayscale color = this->operator()(x, y);
+                            png_image[y][x] = png::rgba_pixel(color, color, color, 255);
+                        }
+                    }
+                    png_image.write(filename);
+                }
+            }
+        };
+
+        std::string ext = extension(filename);
+        std::map<std::string, std::function<void()>>::const_iterator op;
+        if ((op = ops.find(ext)) != ops.end()) {
+            op->second();
+        } else {
+            throw std::runtime_error("Invalid file extension");
+        }
+    }
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 map<rgba> gradient(const map<float>& image, const float floor = 0.f, const float roof = 100.f) {
     map<rgba> grad(image.width(), image.height());
@@ -122,5 +253,7 @@ map<rgba> gradient(const map<float>& image, const float floor = 0.f, const float
 
     return grad;
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 }
